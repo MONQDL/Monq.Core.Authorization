@@ -92,6 +92,26 @@ namespace Monq.Core.Authorization.Tests
                 }
             };
 
+        public static PacketViewModel CreatePacketWithUserEntitiesGrant(in long packetId, in long userspaceId, in long workGroupId, in long userId) =>
+            new PacketViewModel
+            {
+                Id = packetId,
+                Owners = new[]
+                {
+                    new PacketOwnerViewModel
+                    {
+                        PacketId = packetId,
+                        UserspaceId = userspaceId,
+                        WorkGroupId = workGroupId,
+                        Users = new[] { userId }
+                    }
+                },
+                Grants = new[]
+                {
+                    Modules.GrantType.AdminsUserEntitiesWrite
+                }
+            };
+
         public static IEnumerable<SystemPacketMapViewModel> CreateSystemPacketMaps(in long packetId,
             in long userspaceId) =>
             new SystemPacketMapViewModel[]
@@ -102,6 +122,7 @@ namespace Monq.Core.Authorization.Tests
                     UserspaceId = userspaceId,
                     PacketId = packetId,
                     PacketType = PacketTypes.UserspaceAdmin,
+
                 }
             };
 

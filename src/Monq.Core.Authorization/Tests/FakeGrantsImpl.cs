@@ -151,13 +151,36 @@ namespace Monq.Core.Authorization.Tests
 
         /// <summary>
         /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
-        /// администратором пользовательского пространства с данным идентификатором <paramref name="userspaceId"/>.
+        /// администратором пользовательского пространства с данным идентификатором <paramref name="userspaceId"/>
+        /// или с правом на пользовательские сущности.
         /// </summary>
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
         /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
         public bool IsUserspaceAdmin(ClaimsPrincipal user, long userspaceId) =>
             IsUserspaceAdminFunc?.Invoke(user, userspaceId) ?? _defaultImpl.IsUserspaceAdmin(user, userspaceId);
+
+
+        /// <summary>
+        /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
+        /// администратором пользовательского пространства с данным идентификатором <paramref name="userspaceId"/>.
+        /// </summary>
+        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
+        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
+        /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
+        public bool IsUserspaceAdminAdmin(ClaimsPrincipal user, long userspaceId) =>
+            IsUserspaceAdminFunc?.Invoke(user, userspaceId) ?? _defaultImpl.IsUserspaceAdminAdmin(user, userspaceId);
+
+        /// <summary>
+        /// Проверить, есть ли у пользователя права к пользовательским сущностям.
+        /// администратором пользовательского пространства
+        /// с данным идентификатором <paramref name="userspaceId"/>.
+        /// </summary>
+        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
+        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
+        /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
+        public bool HasUsersEntitiesGrant(ClaimsPrincipal user, long userspaceId) =>
+            IsUserspaceAdminFunc?.Invoke(user, userspaceId) ?? _defaultImpl.HasUsersEntitiesGrant(user, userspaceId);
 
         /// <summary>
         /// Получить Id пользователя из <see cref="ClaimsPrincipal"/>.
