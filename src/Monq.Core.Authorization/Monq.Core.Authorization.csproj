@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Version>4.5.0</Version>
+    <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+    <Version Condition=" '$(VersionSuffix)' != '' ">$(Version)-$(VersionSuffix)</Version>
+    <IsPackable>true</IsPackable>
+    <TargetFrameworks>net5.0</TargetFrameworks>
+    <Authors>Dmitry Fokin</Authors>
+    <Company>MONQ Digital lab</Company>
+    <Title>Monq.Core.Authorization</Title>
+    <PackageId>Monq.Core.Authorization</PackageId>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageTags>monq authorization library</PackageTags>
+    <PackageProjectUrl>https://github.com/MONQDL/Monq.Core.Authorization</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MONQDL/Monq.Core.Authorization</RepositoryUrl>
+    <Description>Middleware-библиотека для поддержки авторизации запросов через сервис пользовательских прав MONQ.</Description>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <NoWarn>IDE1006</NoWarn>
+    <Nullable>enable</Nullable>
+    <LangVersion>9.0</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.1" />
+    <PackageReference Include="Monq.Core.Authorization.Models" Version="5.0.0" />
+  </ItemGroup>
+
+</Project>
