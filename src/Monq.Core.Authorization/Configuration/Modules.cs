@@ -245,6 +245,17 @@
             /// Внесение/изменение мета-прав.
             /// </summary>
             internal const string CloudManagementGrantsMetaWrite = "cloud-management.grants-meta.write";
+
+            /// <summary>
+            /// Право для доступа к пользовательским сущностям для админ-ов пространства.
+            /// </summary>
+            /// <remarks>
+            /// Системный модуль Платформа (pl).
+            /// </remarks>
+            /// <remarks>
+            /// Функциональный модуль Администраторы пространства (admins).
+            /// </remarks>
+            internal const string AdminsUserEntitiesWrite = "pl.admins.user-entities-write";
         }
     }
 }

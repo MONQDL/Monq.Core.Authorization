@@ -90,6 +90,26 @@ namespace Microsoft.AspNetCore.Authorization
 
         /// <summary>
         /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
+        /// администратором пользовательского пространства с данным идентификатором <paramref name="userspaceId"/>.
+        /// </summary>
+        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
+        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
+        /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
+        public static bool HasUsersEntitiesGrant(this ClaimsPrincipal user, in long userspaceId)
+            => Implementation.HasUsersEntitiesGrant(user, userspaceId);
+
+        /// <summary>
+        /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
+        /// администратором пользовательского пространства с данным идентификатором <paramref name="userspaceId"/>.
+        /// </summary>
+        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
+        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
+        /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
+        public static bool IsUserspaceAdminAdmin(this ClaimsPrincipal? user, long userspaceId)
+            => Implementation.HasUserspaceAdminPacket(user, userspaceId);
+
+        /// <summary>
+        /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
         /// системным пользователем.
         /// </summary>
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
