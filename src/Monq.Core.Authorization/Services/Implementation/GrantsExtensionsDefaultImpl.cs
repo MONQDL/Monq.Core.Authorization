@@ -186,7 +186,7 @@ namespace Microsoft.AspNetCore.Authorization
         /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
         public bool IsUserspaceAdmin(ClaimsPrincipal? user, long userspaceId)
         {
-            var isUserspaceAdmin = IsUserspaceAdminAdmin(user, userspaceId);
+            var isUserspaceAdmin = HasUserspaceAdminPacket(user, userspaceId);
             var hasUserEntitiesGrant = HasUsersEntitiesGrant(user, userspaceId);
 
             return isUserspaceAdmin || hasUserEntitiesGrant;
@@ -225,7 +225,7 @@ namespace Microsoft.AspNetCore.Authorization
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
         /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
-        public bool IsUserspaceAdminAdmin(ClaimsPrincipal? user, long userspaceId)
+        public bool HasUserspaceAdminPacket(ClaimsPrincipal? user, long userspaceId)
         {
             if (user is null)
                 return false;

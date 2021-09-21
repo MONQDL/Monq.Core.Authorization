@@ -94,7 +94,7 @@ namespace Microsoft.AspNetCore.Authorization
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
         /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
-        public bool IsUserspaceAdminAdmin(ClaimsPrincipal user, long userspaceId);
+        bool HasUserspaceAdminPacket(ClaimsPrincipal user, long userspaceId);
 
         /// <summary>
         /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>

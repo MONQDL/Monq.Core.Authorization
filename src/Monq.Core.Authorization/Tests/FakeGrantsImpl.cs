@@ -168,8 +168,8 @@ namespace Monq.Core.Authorization.Tests
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
         /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
-        public bool IsUserspaceAdminAdmin(ClaimsPrincipal user, long userspaceId) =>
-            IsUserspaceAdminFunc?.Invoke(user, userspaceId) ?? _defaultImpl.IsUserspaceAdminAdmin(user, userspaceId);
+        public bool HasUserspaceAdminPacket(ClaimsPrincipal user, long userspaceId) =>
+            IsUserspaceAdminFunc?.Invoke(user, userspaceId) ?? _defaultImpl.HasUserspaceAdminPacket(user, userspaceId);
 
         /// <summary>
         /// Проверить, есть ли у пользователя права к пользовательским сущностям.
