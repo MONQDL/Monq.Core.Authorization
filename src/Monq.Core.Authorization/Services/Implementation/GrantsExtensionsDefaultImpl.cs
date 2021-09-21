@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using Monq.Core.Authorization;
 using Monq.Core.Authorization.Exceptions;
 using Monq.Core.Authorization.Helpers;
 using Monq.Core.Authorization.Models;
@@ -176,12 +177,55 @@ namespace Microsoft.AspNetCore.Authorization
 
         /// <summary>
         /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
-        /// администратором пользовательского пространства с данным идентификатором <paramref name="userspaceId"/>.
+        /// администратором пользовательского пространства
+        /// с данным идентификатором <paramref name="userspaceId"/>
+        /// или обладает правом на пользовательские сущности.
         /// </summary>
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
         /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
         public bool IsUserspaceAdmin(ClaimsPrincipal? user, long userspaceId)
+        {
+            var isUserspaceAdmin = HasUserspaceAdminPacket(user, userspaceId);
+            var hasUserEntitiesGrant = HasUsersEntitiesGrant(user, userspaceId);
+
+            return isUserspaceAdmin || hasUserEntitiesGrant;
+        }
+
+        /// <summary>
+        /// Проверить, есть ли у пользователя права к пользовательским сущностям.
+        /// администратором пользовательского пространства
+        /// с данным идентификатором <paramref name="userspaceId"/>.
+        /// </summary>
+        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
+        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
+        /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
+        public bool HasUsersEntitiesGrant(ClaimsPrincipal? user, long userspaceId)
+        {
+            if (user is null)
+                return false;
+
+            var packets = user.Packets();
+
+            if (!packets.Any())
+                return false;
+
+            var hasUserEntitiesGrant = packets
+                .Where(val => val.Grants.Contains(Modules.GrantType.AdminsUserEntitiesWrite))
+                .SelectMany(val => val.Owners)
+                .Any(val => val.UserspaceId == userspaceId);
+
+            return hasUserEntitiesGrant;
+        }
+
+        /// <summary>
+        /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
+        /// администратором пользовательского пространства с данным идентификатором <paramref name="userspaceId"/>.
+        /// </summary>
+        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
+        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
+        /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
+        public bool HasUserspaceAdminPacket(ClaimsPrincipal? user, long userspaceId)
         {
             if (user is null)
                 return false;

@@ -69,12 +69,32 @@ namespace Microsoft.AspNetCore.Authorization
 
         /// <summary>
         /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
-        /// администратором пользовательского пространства с данным идентификатором <paramref name="userspaceId"/>.
+        /// администратором пользовательского пространства с данным идентификатором <paramref name="userspaceId"/>
+        /// или с правом на пользовательские сущности.
         /// </summary>
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
         /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
         bool IsUserspaceAdmin(ClaimsPrincipal user, long userspaceId);
+
+        /// <summary>
+        /// Проверить, есть ли у пользователя права к пользовательским сущностям.
+        /// администратором пользовательского пространства
+        /// с данным идентификатором <paramref name="userspaceId"/>.
+        /// </summary>
+        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
+        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
+        /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
+        bool HasUsersEntitiesGrant(ClaimsPrincipal user, long userspaceId);
+
+        /// <summary>
+        /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
+        /// администратором пользовательского пространства с данным идентификатором <paramref name="userspaceId"/>.
+        /// </summary>
+        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
+        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
+        /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
+        bool HasUserspaceAdminPacket(ClaimsPrincipal user, long userspaceId);
 
         /// <summary>
         /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
