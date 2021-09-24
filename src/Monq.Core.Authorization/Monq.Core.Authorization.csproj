@@ -27,7 +27,7 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.1" />
-    <PackageReference Include="Monq.Core.Authorization.Models" Version="5.0.1-rev-1267750709" />
+    <PackageReference Include="Monq.Core.Authorization.Models" Version="5.0.1" />
   </ItemGroup>
 
 </Project>
