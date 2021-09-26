@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Security.Claims;
 using Monq.Core.Authorization.Models;
@@ -68,28 +69,42 @@ namespace Microsoft.AspNetCore.Authorization
         bool HasAllGrants(ClaimsPrincipal user, long userspaceId, long workGroupId, IEnumerable<string> grantNames);
 
         /// <summary>
-        /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
-        /// администратором пользовательского пространства с данным идентификатором <paramref name="userspaceId"/>
-        /// или с правом на пользовательские сущности.
+        /// Проверить, является ли пользователь с данным идентификатором <paramref name="userspaceId"/>
+        /// из <see cref="ClaimsPrincipal"/> администратором пользовательского пространства 
+        /// или обладает правом доступа к пользовательским сущностям.
         /// </summary>
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-        /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
+        /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства или обладает правом доступа к пользовательским сущностям.</returns>
+        [Obsolete("Использовать IsAllowUserEntities. " +
+                  "Для проверки наличия только пакета администратора использовать HasUserspaceAdminPacket. " +
+                  "Для проверки наличия только права доступа к пользовательским сущностям использовать HasUsersEntitiesGrant.")]
         bool IsUserspaceAdmin(ClaimsPrincipal user, long userspaceId);
 
         /// <summary>
-        /// Проверить, есть ли у пользователя права к пользовательским сущностям.
-        /// администратором пользовательского пространства
-        /// с данным идентификатором <paramref name="userspaceId"/>.
+        /// Проверить, является ли пользователь с данным идентификатором <paramref name="userspaceId"/>
+        /// из <see cref="ClaimsPrincipal"/> администратором пользовательского пространства 
+        /// или обладает правом доступа к пользовательским сущностям.
         /// </summary>
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-        /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
+        /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства или обладает правом доступа к пользовательским сущностям.</returns>
+        bool IsAllowUserEntities(ClaimsPrincipal user, long userspaceId);
+
+        /// <summary>
+        /// Проверить, есть ли у пользователя
+        /// с данным идентификатором <paramref name="userspaceId"/>
+        /// право доступа к пользовательским сущностям.
+        /// </summary>
+        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
+        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
+        /// <returns>Истина, если у пользователя есть право доступа к пользовательским сущностям.</returns>
         bool HasUsersEntitiesGrant(ClaimsPrincipal user, long userspaceId);
 
         /// <summary>
-        /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
-        /// администратором пользовательского пространства с данным идентификатором <paramref name="userspaceId"/>.
+        /// Проверить, является ли пользователь
+        /// с данным идентификатором <paramref name="userspaceId"/> из <see cref="ClaimsPrincipal"/>
+        /// администратором пользовательского пространства.
         /// </summary>
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
