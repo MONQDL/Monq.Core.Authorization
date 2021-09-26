@@ -479,7 +479,7 @@ namespace Monq.Core.Authorization.Tests
         [InlineData(byte.MaxValue)]
         [InlineData(short.MaxValue)]
         [InlineData(ushort.MaxValue)]
-        public void ShouldProperlyReturnTrueIsUserspaceAdmiAdmin(int seed)
+        public void ShouldProperlyReturnTrueIsUserspaceAdmin(int seed)
         {
             var sporadic = new Random(seed);
             var userId = sporadic.GetId();
@@ -495,8 +495,10 @@ namespace Monq.Core.Authorization.Tests
 
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
-            var isUserspaceAdminAdmin = claim.IsUserspaceAdminAdmin(userspaceId);
-            Assert.True(isUserspaceAdminAdmin);
+            var isUserspaceAdmin = claim.IsUserspaceAdmin(userspaceId);
+            var isAllowUserEntities = claim.IsAllowUserEntities(userspaceId);
+            Assert.True(isUserspaceAdmin);
+            Assert.True(isAllowUserEntities);
         }
 
 
@@ -547,7 +549,9 @@ namespace Monq.Core.Authorization.Tests
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
             var isUserspaceAdmin = claim.IsUserspaceAdmin(userspaceId);
+            var isAllowUserEntities = claim.IsAllowUserEntities(userspaceId);
             Assert.True(isUserspaceAdmin);
+            Assert.True(isAllowUserEntities);
         }
 
         [Theory(DisplayName = "GrantsExtensions: IsUserspaceAdmin(): Проверка ложь при отсутствии прав.")]
@@ -568,7 +572,9 @@ namespace Monq.Core.Authorization.Tests
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
             var isUserspaceAdmin = claim.IsUserspaceAdmin(userspaceId);
+            var isAllowUserEntities = claim.IsAllowUserEntities(userspaceId);
             Assert.False(isUserspaceAdmin);
+            Assert.False(isAllowUserEntities);
         }
 
         [Fact(DisplayName = "GrantsExtensions: IsSystemUser(): Проверка истина для системного пользователя.")]
