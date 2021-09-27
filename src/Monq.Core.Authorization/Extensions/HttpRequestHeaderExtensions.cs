@@ -17,6 +17,9 @@ namespace Monq.Core.Authorization.Extensions
         {
             if (httpRequestHeaders.Contains(name))
                 httpRequestHeaders.Remove(name);
+
+            if (string.IsNullOrEmpty(value)) return;
+
             httpRequestHeaders.TryAddWithoutValidation(name, value);
         }
 
