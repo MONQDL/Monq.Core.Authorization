@@ -241,7 +241,191 @@ namespace Monq.Core.Authorization.Tests
             Assert.True(hasGrant);
         }
 
-        [Theory(DisplayName = "GrantsExtensions: HasGrant(): Проверка истина администратору пространства даже при ошибке рабочей группы.")]
+        [Theory(DisplayName = "GrantsExtensions: HasGrant(): Проверка истина при проверке права из админ. панели.")]
+        [InlineData(sbyte.MaxValue)]
+        [InlineData(byte.MaxValue)]
+        public void ShouldProperlyReturnTrueForAdminPanelGrant(int seed)
+        {
+            var sporadic = new Random(seed);
+            var packetId = sporadic.GetId();
+            var userId = sporadic.GetId();
+            var workGroupId = sporadic.GetId();
+            var falseWorkGroupId = sporadic.GetId();
+            var userspaceId = sporadic.GetId();
+
+            var claim = TestData.CreateUserClaimPrincipal(userId);
+
+            var packetToSet = TestData.CreatePacketWithUserEntitiesGrant(
+                packetId, userspaceId, workGroupId, userId);
+            
+            PacketRepository.Set(userId, packetToSet);
+
+            var hasGrant = claim.HasGrant(userspaceId, falseWorkGroupId, Modules.GrantType.AdminsUserEntitiesWrite);
+            Assert.True(hasGrant);
+        }
+
+        [Theory(DisplayName = "GrantsExtensions: HasAnyGrant(): Проверка истина при проверке права из админ. панели.")]
+        [InlineData(sbyte.MaxValue)]
+        [InlineData(byte.MaxValue)]
+        public void ShouldProperlyReturnTrueForAnyAdminPanelGrant(int seed)
+        {
+            var sporadic = new Random(seed);
+            var packetId = sporadic.GetId();
+            var userId = sporadic.GetId();
+            var workGroupId = sporadic.GetId();
+            var falseWorkGroupId = sporadic.GetId();
+            var userspaceId = sporadic.GetId();
+
+            var claim = TestData.CreateUserClaimPrincipal(userId);
+
+            var packetToSet = TestData.CreatePacketWithUserEntitiesGrant(
+                packetId, userspaceId, workGroupId, userId);
+
+            PacketRepository.Set(userId, packetToSet);
+
+            var hasAnyGrant = claim.HasAnyGrant(userspaceId, falseWorkGroupId, new List<string>{
+                Modules.GrantType.AdminsUserEntitiesWrite, Modules.GrantType.WorkGroupDeliveriesRead});
+            Assert.True(hasAnyGrant);
+        }
+
+        [Theory(DisplayName = "GrantsExtensions: HasGrant(): Проверка истина при проверке права из админ. панели.")]
+        [InlineData(sbyte.MaxValue)]
+        [InlineData(byte.MaxValue)]
+        public void ShouldProperlyReturnTrueForAdminPanelGrant2(int seed)
+        {
+            var sporadic = new Random(seed);
+            var packetId = sporadic.GetId();
+            var userId = sporadic.GetId();
+            var workGroupId = sporadic.GetId();
+            var userspaceId = sporadic.GetId();
+
+            var claim = TestData.CreateUserClaimPrincipal(userId);
+
+            var packetToSet = TestData.CreatePacketWithUserEntitiesGrant(
+                packetId, userspaceId, workGroupId, userId);
+
+            PacketRepository.Set(userId, packetToSet);
+
+            var hasGrant = claim.HasUserspaceAdminPanelGrant(userspaceId, Modules.GrantType.AdminsUserEntitiesWrite);
+            Assert.True(hasGrant);
+        }
+
+        [Theory(DisplayName = "GrantsExtensions: HasAdminPanelGrant(): Проверка истина при проверке права из админ. панели.")]
+        [InlineData(sbyte.MaxValue)]
+        [InlineData(byte.MaxValue)]
+        public void ShouldProperlyReturnTrueForAnyAdminPanelGrant2(int seed)
+        {
+            var sporadic = new Random(seed);
+            var packetId = sporadic.GetId();
+            var userId = sporadic.GetId();
+            var workGroupId = sporadic.GetId();
+            var userspaceId = sporadic.GetId();
+
+            var claim = TestData.CreateUserClaimPrincipal(userId);
+
+            var packetToSet = TestData.CreatePacketWithUserEntitiesGrant(
+                packetId, userspaceId, workGroupId, userId);
+
+            PacketRepository.Set(userId, packetToSet);
+
+            var hasAnyGrant = claim.HasAnyUserspaceAdminPanelGrant(userspaceId, new List<string>{
+                Modules.GrantType.AdminsUserEntitiesWrite, Modules.GrantType.WorkGroupDeliveriesRead});
+            Assert.True(hasAnyGrant);
+        }
+        
+        [Theory(DisplayName = "GrantsExtensions: HasGrant(): Проверка ложь при проверке права из админ. панели.")]
+        [InlineData(sbyte.MaxValue)]
+        [InlineData(byte.MaxValue)]
+        public void ShouldProperlyReturnFalseForAdminPanelGrant(int seed)
+        {
+            var sporadic = new Random(seed);
+            var packetId = sporadic.GetId();
+            var userId = sporadic.GetId();
+            var workGroupId = sporadic.GetId();
+            var falseWorkGroupId = sporadic.GetId();
+            var userspaceId = sporadic.GetId();
+
+            var claim = TestData.CreateUserClaimPrincipal(userId);
+
+            var packetToSet = TestData.CreatePacketWithRandomGrant(sporadic,
+                packetId, userspaceId, workGroupId, userId);
+
+            PacketRepository.Set(userId, packetToSet);
+
+            var hasGrant = claim.HasGrant(userspaceId, falseWorkGroupId, Modules.GrantType.AdminsUserEntitiesWrite);
+            Assert.False(hasGrant);
+        }
+
+        [Theory(DisplayName = "GrantsExtensions: HasAnyGrant(): Проверка ложь при проверке права из админ. панели.")]
+        [InlineData(sbyte.MaxValue)]
+        [InlineData(byte.MaxValue)]
+        public void ShouldProperlyReturnFalseForAnyAdminPanelGrant(int seed)
+        {
+            var sporadic = new Random(seed);
+            var packetId = sporadic.GetId();
+            var userId = sporadic.GetId();
+            var workGroupId = sporadic.GetId();
+            var falseWorkGroupId = sporadic.GetId();
+            var userspaceId = sporadic.GetId();
+
+            var claim = TestData.CreateUserClaimPrincipal(userId);
+
+            var packetToSet = TestData.CreatePacketWithRandomGrant(sporadic,
+                packetId, userspaceId, workGroupId, userId);
+
+            PacketRepository.Set(userId, packetToSet);
+
+            var hasAnyGrant = claim.HasAnyGrant(userspaceId, falseWorkGroupId, new List<string>{
+                Modules.GrantType.AdminsUserEntitiesWrite, Modules.GrantType.WorkGroupDeliveriesRead});
+            Assert.False(hasAnyGrant);
+        }
+
+        [Theory(DisplayName = "GrantsExtensions: HasGrant(): Проверка ложь при проверке права из админ. панели.")]
+        [InlineData(sbyte.MaxValue)]
+        [InlineData(byte.MaxValue)]
+        public void ShouldProperlyReturnFalseForAdminPanelGrant2(int seed)
+        {
+            var sporadic = new Random(seed);
+            var packetId = sporadic.GetId();
+            var userId = sporadic.GetId();
+            var workGroupId = sporadic.GetId();
+            var userspaceId = sporadic.GetId();
+
+            var claim = TestData.CreateUserClaimPrincipal(userId);
+
+            var packetToSet = TestData.CreatePacketWithGrant(
+                packetId, userspaceId, workGroupId, userId, Modules.GrantType.WorkGroupDeliveriesRead);
+
+            PacketRepository.Set(userId, packetToSet);
+
+            var hasGrant = claim.HasUserspaceAdminPanelGrant(userspaceId, Modules.GrantType.AdminsUserEntitiesWrite);
+            Assert.False(hasGrant);
+        }
+
+        [Theory(DisplayName = "GrantsExtensions: HasAdminPanelGrant(): Проверка ложь при проверке права из админ. панели.")]
+        [InlineData(sbyte.MaxValue)]
+        [InlineData(byte.MaxValue)]
+        public void ShouldProperlyReturnFalseForAnyAdminPanelGrant2(int seed)
+        {
+            var sporadic = new Random(seed);
+            var packetId = sporadic.GetId();
+            var userId = sporadic.GetId();
+            var workGroupId = sporadic.GetId();
+            var userspaceId = sporadic.GetId();
+
+            var claim = TestData.CreateUserClaimPrincipal(userId);
+
+            var packetToSet = TestData.CreatePacketWithGrant(
+                packetId, userspaceId, workGroupId, userId, Modules.GrantType.WorkGroupDeliveriesRead);
+
+            PacketRepository.Set(userId, packetToSet);
+
+            var hasAnyGrant = claim.HasAnyUserspaceAdminPanelGrant(userspaceId, new List<string>{
+                Modules.GrantType.AdminsUserEntitiesWrite, Modules.GrantType.WorkGroupDeliveriesRead});
+            Assert.False(hasAnyGrant);
+        }
+        
+        [Theory(DisplayName = "GrantsExtensions: HasAnyAdminPanelGrant(): Проверка истина администратору пространства даже при ошибке рабочей группы.")]
         [InlineData(sbyte.MaxValue)]
         [InlineData(byte.MaxValue)]
         public void ShouldProperlyReturnTrueForUserspaceAdminOnHasGrantRequest(int seed)

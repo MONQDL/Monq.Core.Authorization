@@ -69,6 +69,18 @@ namespace Monq.Core.Authorization.Tests
         public Func<ClaimsPrincipal, long, bool>? HasUsersEntitiesGrantFunc { get; set; }
 
         /// <summary>
+        /// Проверить есть ли у пользователя
+        /// с данным идентификатором <paramref name="userspaceId"/>
+        /// парво из админ. панели.
+        /// </summary>
+        public Func<ClaimsPrincipal, long, string, bool>? HasUserspaceAdminPanelGrantFunc { get; set; }
+
+        /// <summary>
+        /// Проверить, есть ли хотя бы одно из заданных прав админ. панели у пользователя из <see cref="ClaimsPrincipal"/>.
+        /// </summary>
+        public Func<ClaimsPrincipal, long, IEnumerable<string>, bool>? HasAnyUserspaceAdminPanelGrantFunc { get; set; }
+
+        /// <summary>
         /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
         /// системным пользователем.
         /// </summary>
@@ -189,6 +201,16 @@ namespace Monq.Core.Authorization.Tests
         /// <inheritdoc />
         public bool HasUsersEntitiesGrant(ClaimsPrincipal user, long userspaceId) =>
             HasUsersEntitiesGrantFunc?.Invoke(user, userspaceId) ?? _defaultImpl.HasUsersEntitiesGrant(user, userspaceId);
+
+        /// <inheritdoc />
+        public bool HasUserspaceAdminPanelGrant(ClaimsPrincipal? user, long userspaceId, string adminPanelGrant) =>
+            HasUserspaceAdminPanelGrantFunc?.Invoke(user, userspaceId, adminPanelGrant) ??
+            _defaultImpl.HasUserspaceAdminPanelGrant(user, userspaceId, adminPanelGrant);
+        
+        /// <inheritdoc />
+        public bool HasAnyUserspaceAdminPanelGrant(ClaimsPrincipal? user, long userspaceId, IEnumerable<string> adminPanelGrants) =>
+            HasAnyUserspaceAdminPanelGrantFunc?.Invoke(user, userspaceId, adminPanelGrants) ??
+            _defaultImpl.HasAnyUserspaceAdminPanelGrant(user, userspaceId, adminPanelGrants);
 
         /// <summary>
         /// Получить Id пользователя из <see cref="ClaimsPrincipal"/>.

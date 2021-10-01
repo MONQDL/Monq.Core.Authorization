@@ -102,6 +102,27 @@ namespace Microsoft.AspNetCore.Authorization
         bool HasUsersEntitiesGrant(ClaimsPrincipal user, long userspaceId);
 
         /// <summary>
+        /// Проверить есть ли у пользователя
+        /// с данным идентификатором <paramref name="userspaceId"/>
+        /// парво из админ. панели.
+        /// </summary>
+        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
+        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
+        /// <param name="adminPanelGrant">Строковое представление права админ панели (например, "pl.admins.user-entities-write").</param>
+        /// <returns>Истина при наличии права.</returns>
+        bool HasUserspaceAdminPanelGrant(ClaimsPrincipal? user, long userspaceId, string adminPanelGrant);
+
+        /// <summary>
+        /// Проверить, есть ли хотя бы одно из заданных прав админ. панели у пользователя из <see cref="ClaimsPrincipal"/>.
+        /// </summary>
+        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
+        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
+        /// <param name="adminPanelGrantNames">Строковые представления прав админ. панели (например, "pl.admins.user-entities-write").</param>
+        /// <returns>Истина, если хотя бы одно заданное право есть у пользователя запроса.</returns>
+        bool HasAnyUserspaceAdminPanelGrant(ClaimsPrincipal? user, long userspaceId,
+            IEnumerable<string> adminPanelGrantNames);
+
+        /// <summary>
         /// Проверить, является ли пользователь
         /// с данным идентификатором <paramref name="userspaceId"/> из <see cref="ClaimsPrincipal"/>
         /// администратором пользовательского пространства.
