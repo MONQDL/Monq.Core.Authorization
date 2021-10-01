@@ -123,8 +123,31 @@ namespace Microsoft.AspNetCore.Authorization
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
         /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
-        public static bool HasUserspaceAdminPacket(ClaimsPrincipal user, long userspaceId)
+        public static bool HasUserspaceAdminPacket(this ClaimsPrincipal user, long userspaceId)
             => Implementation.HasUserspaceAdminPacket(user, userspaceId);
+
+        /// <summary>
+        /// Проверить есть ли у пользователя
+        /// с данным идентификатором <paramref name="userspaceId"/>
+        /// парво из админ. панели.
+        /// </summary>
+        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
+        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
+        /// <param name="adminPanelGrant">Строковое представление права админ. панели (например, "pl.admins.user-entities-write").</param>
+        /// <returns>Истина при наличии права.</returns>
+        public static bool HasUserspaceAdminPanelGrant(this ClaimsPrincipal? user, long userspaceId, string adminPanelGrant)
+            => Implementation.HasUserspaceAdminPanelGrant(user, userspaceId, adminPanelGrant);
+
+        /// <summary>
+        /// Проверить, есть ли хотя бы одно из заданных прав админ. панели у пользователя из <see cref="ClaimsPrincipal"/>.
+        /// </summary>
+        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
+        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
+        /// <param name="adminPanelGrantNames">Строковые представления прав админ панели (например, "pl.admins.user-entities-write").</param>
+        /// <returns>Истина, если хотя бы одно заданное право есть у пользователя запроса.</returns>
+        public static bool HasAnyUserspaceAdminPanelGrant(this ClaimsPrincipal user, long userspaceId,
+            IEnumerable<string> adminPanelGrantNames)
+            => Implementation.HasAnyUserspaceAdminPanelGrant(user, userspaceId, adminPanelGrantNames);
 
         /// <summary>
         /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>

@@ -1,4 +1,6 @@
-﻿namespace Monq.Core.Authorization
+﻿using System.Collections.Generic;
+
+namespace Monq.Core.Authorization
 {
     // TODO: Подумать от том, чтобы сделать открытым.
     // TODO: В таком случае, придётся делать "конструктор", чтобы не возникало курьёзов в духе cloud-management.rsm.users-write.
@@ -246,16 +248,55 @@
             /// </summary>
             internal const string CloudManagementGrantsMetaWrite = "cloud-management.grants-meta.write";
 
-            /// <summary>
-            /// Право для доступа к пользовательским сущностям для админ-ов пространства.
-            /// </summary>
-            /// <remarks>
-            /// Системный модуль Платформа (pl).
-            /// </remarks>
-            /// <remarks>
-            /// Функциональный модуль Администраторы пространства (admins).
-            /// </remarks>
+            /*Права админ. панели*/
             internal const string AdminsUserEntitiesWrite = "pl.admins.user-entities-write";
+            internal const string AdminsAdminsRolesRead = "pl.admins.admins-roles-read";
+            internal const string AdminsAdminsRolesWrite = "pl.admins.admins-roles-write";
+            internal const string AdminsAdminsUsersRead = "pl.admins.admins-users-read";
+            internal const string AdminsAdminsUsersWrite = "pl.admins.admins-users-write";
+            internal const string AdminsAutomatonRead = "pl.admins.automaton-read";
+            internal const string AdminsAutomatonWrite = "pl.admins.automaton-write";
+            internal const string AdminsUserspacesRead = "pl.admins.userspace-read";
+            internal const string AdminsUserspacesWrite = "pl.admins.userspace-write";
+            internal const string AdminsLicenseRead = "pl.admins.license-read";
+            internal const string AdminsLicenseWrite = "pl.admins.license-write";
+            internal const string AdminsUsersRead = "pl.admins.users-read";
+            internal const string AdminsUsersWrite = "pl.admins.users-write";
+            internal const string AdminsPluginsRead = "pl.admins.plugins-read";
+            internal const string AdminsPluginsWrite = "pl.admins.plugins-write";
+            internal const string AdminsPoliticsWorkGroupsRead = "pl.admins.politics-work-groups-read";
+
+            internal const string AdminsPoliticsWorkGroupsWrite =
+                "pl.admins.politics-work-groups-write";
+
+            internal const string AdminsPoliticsUsersRead = "pl.admins.politics-users-read";
+            internal const string AdminsPoliticsUsersWrite = "pl.admins.politics-users-write";
+
+            /// <summary>
+            /// Права админ. панели.
+            /// </summary>
+            internal static List<string> AdminPanleGrants = new List<string>
+            {
+                AdminsUserEntitiesWrite,
+                AdminsAdminsRolesRead,
+                AdminsAdminsRolesWrite,
+                AdminsAdminsUsersRead,
+                AdminsAdminsUsersWrite,
+                AdminsAutomatonRead,
+                AdminsAutomatonWrite,
+                AdminsUserspacesRead,
+                AdminsUserspacesWrite,
+                AdminsLicenseRead,
+                AdminsLicenseWrite,
+                AdminsUsersRead,
+                AdminsUsersWrite,
+                AdminsPluginsRead,
+                AdminsPluginsWrite,
+                AdminsPoliticsWorkGroupsRead,
+                AdminsPoliticsWorkGroupsWrite,
+                AdminsPoliticsUsersRead,
+                AdminsPoliticsUsersWrite
+            };
         }
     }
 }
