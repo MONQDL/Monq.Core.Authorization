@@ -88,7 +88,8 @@ namespace Monq.Core.Authorization.Tests
                 },
                 Grants = new[]
                 {
-                    Modules.GrantType.CloudManagementGrantsMetaWrite
+                    Modules.GrantType.CloudManagementGrantsMetaWrite,
+                    Modules.GrantType.AdminsUserEntitiesWrite
                 }
             };
 

@@ -45,23 +45,10 @@ namespace Monq.Core.Authorization.Tests
         /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
         /// администратором пользовательского пространства с данным идентификатором.
         /// </summary>
-        [Obsolete("Использовать IsAllowUserEntities. " +
-                  "Для проверки наличия только пакета администратора использовать HasUserspaceAdminPacket. " +
-                  "Для проверки наличия только права доступа к пользовательским сущностям использовать HasUsersEntitiesGrant.")]
+        [Obsolete("Использовать HasUsersEntitiesGrant.")]
         public Func<ClaimsPrincipal, long, bool>? IsUserspaceAdminFunc { get; set; }
 
-        /// <summary>
-        /// Проверить, есть ли у пользователь
-        /// из <see cref="ClaimsPrincipal"/> доступ к пользовательским сущностям.
-        /// </summary>
-        public Func<ClaimsPrincipal, long, bool>? IsAllowUserEntitiesFunc { get; set; }
-
-        /// <summary>
-        /// Проверить, есть ли у пользователь
-        /// из <see cref="ClaimsPrincipal"/> доступ к пользовательским сущностям.
-        /// </summary>
-        public Func<ClaimsPrincipal, long, bool>? HasUserspaceAdminPacketFunc { get; set; }
-
+       
         /// <summary>
         /// Проверить, есть ли у пользователь
         /// из <see cref="ClaimsPrincipal"/> доступ к пользовательским сущностям.
@@ -135,17 +122,6 @@ namespace Monq.Core.Authorization.Tests
         public IEnumerable<PacketViewModel> Packets(ClaimsPrincipal user) =>
             PacketsFunc?.Invoke(user) ?? _defaultImpl.Packets(user);
 
-
-        /// <summary>
-        /// Получить соответствие системного пакета.
-        /// </summary>
-        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-        /// <param name="packetType">Тип системного пакета.</param>
-        /// <returns>Идентификатор системного пакета.</returns>
-        public long? GetSystemPacketId(ClaimsPrincipal user, long userspaceId, PacketTypes packetType) =>
-            _defaultImpl.GetSystemPacketId(user, userspaceId, packetType);
-
         /// <summary>
         /// Проверить, есть ли все заданные права у пользователя из <see cref="ClaimsPrincipal"/>.
         /// Всегда безусловно возвращает <c>true</c> для системного пользователя и администратора пространства.
@@ -184,19 +160,9 @@ namespace Monq.Core.Authorization.Tests
 
 
         /// <inheritdoc />
-        [Obsolete("Использовать IsAllowUserEntities. " +
-                  "Для проверки наличия только пакета администратора использовать HasUserspaceAdminPacket. " +
-                  "Для проверки наличия только права к пользовательским сущностям использовать HasUsersEntitiesGrant.")]
+        [Obsolete("Использовать HasUsersEntitiesGrant.")]
         public bool IsUserspaceAdmin(ClaimsPrincipal user, long userspaceId) =>
             IsUserspaceAdminFunc?.Invoke(user, userspaceId) ?? _defaultImpl.IsUserspaceAdmin(user, userspaceId);
-
-        /// <inheritdoc />
-        public bool IsAllowUserEntities(ClaimsPrincipal user, long userspaceId) =>
-            IsAllowUserEntitiesFunc?.Invoke(user, userspaceId) ?? _defaultImpl.IsAllowUserEntities(user, userspaceId);
-
-        /// <inheritdoc />
-        public bool HasUserspaceAdminPacket(ClaimsPrincipal user, long userspaceId) =>
-            HasUserspaceAdminPacketFunc?.Invoke(user, userspaceId) ?? _defaultImpl.HasUserspaceAdminPacket(user, userspaceId);
 
         /// <inheritdoc />
         public bool HasUsersEntitiesGrant(ClaimsPrincipal user, long userspaceId) =>

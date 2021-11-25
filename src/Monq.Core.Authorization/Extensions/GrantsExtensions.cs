@@ -34,16 +34,6 @@ namespace Microsoft.AspNetCore.Authorization
             => Implementation.Packets(user);
 
         /// <summary>
-        /// Получить соответствие системного пакета.
-        /// </summary>
-        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-        /// <param name="packetType">Тип системного пакета.</param>
-        /// <returns>Идентификатор системного пакета.</returns>
-        public static long? GetSystemPacketId(this ClaimsPrincipal user, long userspaceId, PacketTypes packetType) =>
-            Implementation.GetSystemPacketId(user, userspaceId, packetType);
-
-        /// <summary>
         /// Проверить, есть ли заданное именем право у пользователя из <see cref="ClaimsPrincipal"/>.
         /// Всегда безусловно возвращает <c>true</c> для системного пользователя и администратора пространства.
         /// </summary>
@@ -87,22 +77,9 @@ namespace Microsoft.AspNetCore.Authorization
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
         /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства или обладает правом доступа к пользовательским сущностям.</returns>
-        [Obsolete("Использовать IsAllowUserEntities. " +
-                  "Для проверки наличия только пакета администратора использовать HasUserspaceAdminPacket. " +
-                  "Для проверки наличия только права доступа к пользовательским сущностям использовать HasUsersEntitiesGrant.")]
+        [Obsolete("Использовать HasUsersEntitiesGrant.")]
         public static bool IsUserspaceAdmin(this ClaimsPrincipal user, in long userspaceId)
             => Implementation.IsUserspaceAdmin(user, userspaceId);
-
-        /// <summary>
-        /// Проверить, является ли пользователь с данным идентификатором <paramref name="userspaceId"/>
-        /// из <see cref="ClaimsPrincipal"/> администратором пользовательского пространства 
-        /// или обладает правом доступа к пользовательским сущностям.
-        /// </summary>
-        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-        /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства или обладает правом доступа к пользовательским сущностям.</returns>
-        public static bool IsAllowUserEntities(this ClaimsPrincipal user, in long userspaceId)
-            => Implementation.IsAllowUserEntities(user, userspaceId);
 
         /// <summary>
         /// Проверить, есть ли у пользователя
@@ -114,17 +91,6 @@ namespace Microsoft.AspNetCore.Authorization
         /// <returns>Истина, если у пользователя есть право доступа к пользовательским сущностям.</returns>
         public static bool HasUsersEntitiesGrant(this ClaimsPrincipal user, in long userspaceId)
             => Implementation.HasUsersEntitiesGrant(user, userspaceId);
-
-        /// <summary>
-        /// Проверить, является ли пользователь
-        /// с данным идентификатором <paramref name="userspaceId"/> из <see cref="ClaimsPrincipal"/>
-        /// администратором пользовательского пространства.
-        /// </summary>
-        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-        /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства.</returns>
-        public static bool HasUserspaceAdminPacket(this ClaimsPrincipal user, long userspaceId)
-            => Implementation.HasUserspaceAdminPacket(user, userspaceId);
 
         /// <summary>
         /// Проверить есть ли у пользователя
