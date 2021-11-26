@@ -113,20 +113,6 @@ namespace Monq.Core.Authorization.Tests
                 }
             };
 
-        public static IEnumerable<SystemPacketMapViewModel> CreateSystemPacketMaps(in long packetId,
-            in long userspaceId) =>
-            new SystemPacketMapViewModel[]
-            {
-                new SystemPacketMapViewModel
-                {
-                    Id = packetId,
-                    UserspaceId = userspaceId,
-                    PacketId = packetId,
-                    PacketType = PacketTypes.UserspaceAdmin,
-
-                }
-            };
-
         public static ClaimsPrincipal CreateUserClaimPrincipal(in long id)
         {
             var claims = new Claim[] { new Claim(JwtClaimTypes.Subject, id.ToString()) };

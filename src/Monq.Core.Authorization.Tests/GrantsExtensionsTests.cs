@@ -442,9 +442,6 @@ namespace Monq.Core.Authorization.Tests
 
             var requestUserId = sporadic.GetId();
 
-            var systemPacketMaps = TestData.CreateSystemPacketMaps(_userspaceAdminPacketId, userspaceId);
-            PacketRepository.SetSystemPacketMaps(requestUserId, systemPacketMaps);
-
             var adminPacket = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, requestUserId);
             PacketRepository.Set(requestUserId, new[] { adminPacket });
 
@@ -528,9 +525,6 @@ namespace Monq.Core.Authorization.Tests
             PacketRepository.Set(userId, packetToSet);
 
             var requestUserId = sporadic.GetId();
-
-            var systemPacketMaps = TestData.CreateSystemPacketMaps(_userspaceAdminPacketId, userspaceId);
-            PacketRepository.SetSystemPacketMaps(requestUserId, systemPacketMaps);
 
             var adminPacket = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, requestUserId);
             PacketRepository.Set(requestUserId, new[] { adminPacket });
@@ -646,9 +640,6 @@ namespace Monq.Core.Authorization.Tests
 
             var requestUserId = sporadic.GetId();
 
-            var systemPacketMaps = TestData.CreateSystemPacketMaps(_userspaceAdminPacketId, userspaceId);
-            PacketRepository.SetSystemPacketMaps(requestUserId, systemPacketMaps);
-
             var adminPacket = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, requestUserId);
             PacketRepository.Set(requestUserId, new[] { adminPacket });
 
@@ -672,9 +663,6 @@ namespace Monq.Core.Authorization.Tests
             var workGroupId = sporadic.GetId();
             var userspaceId = sporadic.GetId();
 
-            var systemPacketMaps = TestData.CreateSystemPacketMaps(_userspaceAdminPacketId, userspaceId);
-            PacketRepository.SetSystemPacketMaps(userId, systemPacketMaps);
-
             var packetToSet = TestData.CreatePacketWithUserEntitiesGrant(_userspaceAdminPacketId, userspaceId, workGroupId, userId);
             PacketRepository.Set(userId, packetToSet);
 
@@ -696,9 +684,6 @@ namespace Monq.Core.Authorization.Tests
             PacketRepository.Set(userId, Array.Empty<PacketViewModel>());
             var workGroupId = sporadic.GetId();
             var userspaceId = sporadic.GetId();
-
-            var systemPacketMaps = TestData.CreateSystemPacketMaps(_userspaceAdminPacketId, userspaceId);
-            PacketRepository.SetSystemPacketMaps(userId, systemPacketMaps);
 
             var packetToSet = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, userId);
             PacketRepository.Set(userId, packetToSet);
@@ -801,9 +786,6 @@ namespace Monq.Core.Authorization.Tests
             PacketRepository.Set(userId, Array.Empty<PacketViewModel>());
             var workGroupId = sporadic.GetId();
             var userspaceId = sporadic.GetId();
-
-            var systemPacketMaps = TestData.CreateSystemPacketMaps(_userspaceAdminPacketId, userspaceId);
-            PacketRepository.SetSystemPacketMaps(userId, systemPacketMaps);
 
             var packetToSet = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, userId);
             PacketRepository.Set(userId, packetToSet);
