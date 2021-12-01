@@ -92,7 +92,7 @@ namespace Microsoft.AspNetCore.Authorization
             var packets = user.Packets();
 
             //Проверка прав админ. панели.
-            var adminPanelGrants = grantNames.Where(x => Modules.GrantType.AdminPanleGrants.Contains(x));
+            var adminPanelGrants = grantNames.Where(x => x.IndexOf(Modules.GrantType.AdminsGrantPrefix, StringComparison.Ordinal) == 0);
             if (adminPanelGrants?.Any() == true)
             {
                 var hasAdminPanelPackets = HasAnyUserspaceAdminPanelGrant(user, userspaceId, adminPanelGrants);
@@ -167,7 +167,7 @@ namespace Microsoft.AspNetCore.Authorization
 
         /// <inheritdoc />
         public bool HasUserspaceAdminPanelGrant(ClaimsPrincipal? user, long userspaceId, string adminPanelGrant)
-            => HasAnyUserspaceAdminPanelGrant(user, userspaceId, new[] {adminPanelGrant});
+            => HasAnyUserspaceAdminPanelGrant(user, userspaceId, new[] { adminPanelGrant });
 
         //// <inheritdoc />
         public bool HasAnyUserspaceAdminPanelGrant(ClaimsPrincipal? user, long userspaceId, IEnumerable<string> adminPanelGrantNames)
@@ -175,7 +175,7 @@ namespace Microsoft.AspNetCore.Authorization
             if (user is null || adminPanelGrantNames?.Any() != true)
                 return false;
 
-            var garnts = adminPanelGrantNames.Where(x => Modules.GrantType.AdminPanleGrants.Contains(x));
+            var garnts = adminPanelGrantNames.Where(x => x.IndexOf(Modules.GrantType.AdminsGrantPrefix, StringComparison.Ordinal) == 0);
             if (garnts?.Any() != true)
                 return false;
 
@@ -189,7 +189,7 @@ namespace Microsoft.AspNetCore.Authorization
                 .Any(val => val.UserspaceId == userspaceId);        // И выясняем, находится ли владелец в пространстве.
             return userHasAnyGrant;
         }
-         
+
         /// <summary>
         /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
         /// системным пользователем.
