@@ -88,7 +88,8 @@ namespace Monq.Core.Authorization.Tests
                 },
                 Grants = new[]
                 {
-                    Modules.GrantType.CloudManagementGrantsMetaWrite
+                    Modules.GrantType.CloudManagementGrantsMetaWrite,
+                    Modules.GrantType.AdminsUserEntitiesWrite
                 }
             };
 
@@ -109,20 +110,6 @@ namespace Monq.Core.Authorization.Tests
                 Grants = new[]
                 {
                     Modules.GrantType.AdminsUserEntitiesWrite
-                }
-            };
-
-        public static IEnumerable<SystemPacketMapViewModel> CreateSystemPacketMaps(in long packetId,
-            in long userspaceId) =>
-            new SystemPacketMapViewModel[]
-            {
-                new SystemPacketMapViewModel
-                {
-                    Id = packetId,
-                    UserspaceId = userspaceId,
-                    PacketId = packetId,
-                    PacketType = PacketTypes.UserspaceAdmin,
-
                 }
             };
 

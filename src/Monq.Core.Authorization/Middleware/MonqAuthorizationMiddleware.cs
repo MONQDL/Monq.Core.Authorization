@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Monq.Core.Authorization.Middleware
@@ -112,9 +111,8 @@ namespace Monq.Core.Authorization.Middleware
         async Task UpdateGrantsAsync(HttpContext context)
         {
             var userId = context.User.Subject();
-            var (userGrants, systemPackets) = await GetUserPacketsAsync(context, userId);
+            var userGrants = await GetUserPacketsAsync(context, userId);
             PacketRepository.Set(userId, userGrants);
-            PacketRepository.SetSystemPacketMaps(userId, systemPackets);
         }
 
         /// <summary>
@@ -122,7 +120,7 @@ namespace Monq.Core.Authorization.Middleware
         /// </summary>
         /// <param name="context">Инкапсуляция данных HTTP-вызова.</param>
         /// <param name="userId">Идентификатор пользователя запроса.</param>
-        async Task<(IEnumerable<PacketViewModel>, IEnumerable<SystemPacketMapViewModel>)> GetUserPacketsAsync(HttpContext context, long userId)
+        async Task<IEnumerable<PacketViewModel>> GetUserPacketsAsync(HttpContext context, long userId)
         {
             var token = string.Empty;
             if (_options?.GetAccessToken != null)
@@ -147,9 +145,8 @@ namespace Monq.Core.Authorization.Middleware
                 client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value.ToString());
             }
             var userGrants = RequestUserPacketsAsync(userId, client);
-            var systemPackets = RequestSystemPacketMapsAsync(client);
-            await Task.WhenAll(userGrants, systemPackets);
-            return (userGrants.Result, systemPackets.Result);
+            await Task.WhenAll(userGrants);
+            return userGrants.Result;
         }
 
         async Task<IEnumerable<PacketViewModel>> RequestUserPacketsAsync(long userId, HttpClient client)
@@ -168,23 +165,5 @@ namespace Monq.Core.Authorization.Middleware
                 return Array.Empty<PacketViewModel>();
             }
         }
-
-        async Task<IEnumerable<SystemPacketMapViewModel>> RequestSystemPacketMapsAsync(HttpClient client)
-        {
-            try
-            {
-                var response = await client
-                    .GetStringAsync(new Uri(
-                        new Uri(_userGrantsApiUri),
-                        "/api/pl/user-grants/meta/system-packets"));
-                return JsonConvert.DeserializeObject<IEnumerable<SystemPacketMapViewModel>>(response);
-            }
-            catch (HttpRequestException e)
-            {
-                _logger.LogError(new EventId(), e, e.Message, e);
-                return Array.Empty<SystemPacketMapViewModel>();
-            }
-        }
-
     }
 }

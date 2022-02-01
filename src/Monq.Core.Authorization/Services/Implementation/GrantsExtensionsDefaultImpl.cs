@@ -61,26 +61,6 @@ namespace Microsoft.AspNetCore.Authorization
         }
 
         /// <summary>
-        /// Получить соответствие системного пакета.
-        /// </summary>
-        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-        /// <param name="packetType">Тип системного пакета.</param>
-        /// <returns>Идентификатор системного пакета.</returns>
-        public long? GetSystemPacketId(ClaimsPrincipal? user, long userspaceId, PacketTypes packetType)
-        {
-            if (user is null)
-                return null;
-
-            var userId = user.Subject();
-            if (userId <= 0)
-                return null;
-
-            var systemPacketMaps = PacketRepository.GetSystemPacketMaps(userId);
-            return systemPacketMaps.FirstOrDefault(x => x.UserspaceId == userspaceId && x.PacketType == packetType)?.PacketId;
-        }
-
-        /// <summary>
         /// Проверить, есть ли заданное именем право у пользователя из <see cref="ClaimsPrincipal"/>.
         /// Всегда безусловно возвращает <c>true</c> для системного пользователя и администратора пространства.
         /// </summary>
@@ -112,7 +92,7 @@ namespace Microsoft.AspNetCore.Authorization
             var packets = user.Packets();
 
             //Проверка прав админ. панели.
-            var adminPanelGrants = grantNames.Where(x => Modules.GrantType.AdminPanleGrants.Contains(x));
+            var adminPanelGrants = grantNames.Where(x => x.IndexOf(Modules.GrantType.AdminsGrantPrefix, StringComparison.Ordinal) == 0);
             if (adminPanelGrants?.Any() == true)
             {
                 var hasAdminPanelPackets = HasAnyUserspaceAdminPanelGrant(user, userspaceId, adminPanelGrants);
@@ -178,23 +158,16 @@ namespace Microsoft.AspNetCore.Authorization
         }
 
         /// <inheritdoc />
-        [Obsolete("Использовать IsAllowUserEntities. " +
-                  "Для проверки наличия только пакета администратора использовать HasUserspaceAdminPacket. " +
-                  "Для проверки наличия только права доступа к пользовательским сущностям использовать HasUsersEntitiesGrant.")]
+        [Obsolete("Использовать HasUsersEntitiesGrant")]
         public bool IsUserspaceAdmin(ClaimsPrincipal? user, long userspaceId)
-            => HasUserspaceAdminPacket(user, userspaceId) || HasUsersEntitiesGrant(user, userspaceId);
+            => HasUsersEntitiesGrant(user, userspaceId);
 
-        /// <inheritdoc />
-        public bool IsAllowUserEntities(ClaimsPrincipal user, long userspaceId)
-            => HasUserspaceAdminPacket(user, userspaceId) || HasUsersEntitiesGrant(user, userspaceId);
-
-        /// <inheritdoc />
         public bool HasUsersEntitiesGrant(ClaimsPrincipal? user, long userspaceId)
         => HasUserspaceAdminPanelGrant(user, userspaceId, Modules.GrantType.AdminsUserEntitiesWrite);
 
         /// <inheritdoc />
         public bool HasUserspaceAdminPanelGrant(ClaimsPrincipal? user, long userspaceId, string adminPanelGrant)
-            => HasAnyUserspaceAdminPanelGrant(user, userspaceId, new[] {adminPanelGrant});
+            => HasAnyUserspaceAdminPanelGrant(user, userspaceId, new[] { adminPanelGrant });
 
         //// <inheritdoc />
         public bool HasAnyUserspaceAdminPanelGrant(ClaimsPrincipal? user, long userspaceId, IEnumerable<string> adminPanelGrantNames)
@@ -202,7 +175,7 @@ namespace Microsoft.AspNetCore.Authorization
             if (user is null || adminPanelGrantNames?.Any() != true)
                 return false;
 
-            var garnts = adminPanelGrantNames.Where(x => Modules.GrantType.AdminPanleGrants.Contains(x));
+            var garnts = adminPanelGrantNames.Where(x => x.IndexOf(Modules.GrantType.AdminsGrantPrefix, StringComparison.Ordinal) == 0);
             if (garnts?.Any() != true)
                 return false;
 
@@ -215,32 +188,6 @@ namespace Microsoft.AspNetCore.Authorization
                 .SelectMany(val => val.Owners)                      // Получаем владельцев оставшихся пакетов.
                 .Any(val => val.UserspaceId == userspaceId);        // И выясняем, находится ли владелец в пространстве.
             return userHasAnyGrant;
-        }
-
-
-        /// <inheritdoc />
-        public bool HasUserspaceAdminPacket(ClaimsPrincipal? user, long userspaceId)
-        {
-            if (user is null)
-                return false;
-
-            var packets = user.Packets();
-
-            if (!packets.Any())
-            {
-                return false;
-            }
-
-            var userspaceAdminPacketId = user.GetSystemPacketId(userspaceId, PacketTypes.UserspaceAdmin);
-            if (userspaceAdminPacketId.Equals(null))
-                return false;
-
-            var userHasCloudAdminGrantsInUserspace = packets
-                .Where(val => val.Id == userspaceAdminPacketId)
-                .SelectMany(val => val.Owners)
-                .Any(val => val.UserspaceId == userspaceId);
-
-            return userHasCloudAdminGrantsInUserspace;
         }
 
         /// <summary>
@@ -269,7 +216,6 @@ namespace Microsoft.AspNetCore.Authorization
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
         /// <returns>Истина, если пользователь -- cистемный или администратор заданного пользовательского пространства.</returns>
-        //TODO: IsUserspaceAdmin заменить на IsAllowUserEntities или HasUserspaceAdminPacket.
         public bool IsSuperUser(ClaimsPrincipal? user, long userspaceId)
             => IsSystemUser(user) || IsUserspaceAdmin(user, userspaceId);
 

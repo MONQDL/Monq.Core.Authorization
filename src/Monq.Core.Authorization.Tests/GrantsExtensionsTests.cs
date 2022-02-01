@@ -442,9 +442,6 @@ namespace Monq.Core.Authorization.Tests
 
             var requestUserId = sporadic.GetId();
 
-            var systemPacketMaps = TestData.CreateSystemPacketMaps(_userspaceAdminPacketId, userspaceId);
-            PacketRepository.SetSystemPacketMaps(requestUserId, systemPacketMaps);
-
             var adminPacket = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, requestUserId);
             PacketRepository.Set(requestUserId, new[] { adminPacket });
 
@@ -528,9 +525,6 @@ namespace Monq.Core.Authorization.Tests
             PacketRepository.Set(userId, packetToSet);
 
             var requestUserId = sporadic.GetId();
-
-            var systemPacketMaps = TestData.CreateSystemPacketMaps(_userspaceAdminPacketId, userspaceId);
-            PacketRepository.SetSystemPacketMaps(requestUserId, systemPacketMaps);
 
             var adminPacket = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, requestUserId);
             PacketRepository.Set(requestUserId, new[] { adminPacket });
@@ -646,9 +640,6 @@ namespace Monq.Core.Authorization.Tests
 
             var requestUserId = sporadic.GetId();
 
-            var systemPacketMaps = TestData.CreateSystemPacketMaps(_userspaceAdminPacketId, userspaceId);
-            PacketRepository.SetSystemPacketMaps(requestUserId, systemPacketMaps);
-
             var adminPacket = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, requestUserId);
             PacketRepository.Set(requestUserId, new[] { adminPacket });
 
@@ -656,33 +647,6 @@ namespace Monq.Core.Authorization.Tests
             var grantToRequest = TestData.CreatePacketWithRandomGrant(sporadic, packetId, userspaceId, falseWorkGroupId, userId);
             var hasAllGrants = claim.HasAllGrants(userspaceId, workGroupId, new[] { grantToRequest.Grants.First() });
             Assert.True(hasAllGrants);
-        }
-
-        [Theory(DisplayName = "GrantsExtensions: IsUserspaceAdminAdmin(): Проверка истина при корректном запросе.")]
-        [InlineData(sbyte.MaxValue)]
-        [InlineData(byte.MaxValue)]
-        [InlineData(short.MaxValue)]
-        [InlineData(ushort.MaxValue)]
-        public void ShouldProperlyReturnTrueIsUserspaceAdmin(int seed)
-        {
-            var sporadic = new Random(seed);
-            var userId = sporadic.GetId();
-            PacketRepository.Set(userId, Array.Empty<PacketViewModel>());
-            var workGroupId = sporadic.GetId();
-            var userspaceId = sporadic.GetId();
-
-            var systemPacketMaps = TestData.CreateSystemPacketMaps(_userspaceAdminPacketId, userspaceId);
-            PacketRepository.SetSystemPacketMaps(userId, systemPacketMaps);
-
-            var packetToSet = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, userId);
-            PacketRepository.Set(userId, packetToSet);
-
-            var claim = TestData.CreateUserClaimPrincipal(userId);
-
-            var isUserspaceAdmin = claim.IsUserspaceAdmin(userspaceId);
-            var isAllowUserEntities = claim.IsAllowUserEntities(userspaceId);
-            Assert.True(isUserspaceAdmin);
-            Assert.True(isAllowUserEntities);
         }
 
 
@@ -698,9 +662,6 @@ namespace Monq.Core.Authorization.Tests
             PacketRepository.Set(userId, Array.Empty<PacketViewModel>());
             var workGroupId = sporadic.GetId();
             var userspaceId = sporadic.GetId();
-
-            var systemPacketMaps = TestData.CreateSystemPacketMaps(_userspaceAdminPacketId, userspaceId);
-            PacketRepository.SetSystemPacketMaps(userId, systemPacketMaps);
 
             var packetToSet = TestData.CreatePacketWithUserEntitiesGrant(_userspaceAdminPacketId, userspaceId, workGroupId, userId);
             PacketRepository.Set(userId, packetToSet);
@@ -724,18 +685,13 @@ namespace Monq.Core.Authorization.Tests
             var workGroupId = sporadic.GetId();
             var userspaceId = sporadic.GetId();
 
-            var systemPacketMaps = TestData.CreateSystemPacketMaps(_userspaceAdminPacketId, userspaceId);
-            PacketRepository.SetSystemPacketMaps(userId, systemPacketMaps);
-
             var packetToSet = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, userId);
             PacketRepository.Set(userId, packetToSet);
 
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
             var isUserspaceAdmin = claim.IsUserspaceAdmin(userspaceId);
-            var isAllowUserEntities = claim.IsAllowUserEntities(userspaceId);
             Assert.True(isUserspaceAdmin);
-            Assert.True(isAllowUserEntities);
         }
 
         [Theory(DisplayName = "GrantsExtensions: IsUserspaceAdmin(): Проверка ложь при отсутствии прав.")]
@@ -756,9 +712,7 @@ namespace Monq.Core.Authorization.Tests
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
             var isUserspaceAdmin = claim.IsUserspaceAdmin(userspaceId);
-            var isAllowUserEntities = claim.IsAllowUserEntities(userspaceId);
             Assert.False(isUserspaceAdmin);
-            Assert.False(isAllowUserEntities);
         }
 
         [Fact(DisplayName = "GrantsExtensions: IsSystemUser(): Проверка истина для системного пользователя.")]
@@ -832,9 +786,6 @@ namespace Monq.Core.Authorization.Tests
             PacketRepository.Set(userId, Array.Empty<PacketViewModel>());
             var workGroupId = sporadic.GetId();
             var userspaceId = sporadic.GetId();
-
-            var systemPacketMaps = TestData.CreateSystemPacketMaps(_userspaceAdminPacketId, userspaceId);
-            PacketRepository.SetSystemPacketMaps(userId, systemPacketMaps);
 
             var packetToSet = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, userId);
             PacketRepository.Set(userId, packetToSet);
