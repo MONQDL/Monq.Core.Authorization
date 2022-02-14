@@ -5,11 +5,12 @@ using Microsoft.Extensions.Logging;
 using Monq.Core.Authorization.Extensions;
 using Monq.Core.Authorization.Helpers;
 using Monq.Core.Authorization.Models;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Monq.Core.Authorization.Middleware
@@ -21,13 +22,22 @@ namespace Monq.Core.Authorization.Middleware
     {
         const string _servicesBaseUri = "BaseUri";
 
+        static readonly JsonSerializerOptions _jsonSerializationOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
+        };
+
         readonly RequestDelegate _next;
         readonly ILogger<MonqAuthorizationMiddleware> _logger;
+        readonly IHttpClientFactory _httpClientFactory;
         readonly HttpMessageHandler? _httpMessageHandler;
 
         readonly string _userGrantsApiUri;
         readonly TimeSpan _connectionTimeout = TimeSpan.FromSeconds(30);
+        readonly TimeSpan _cacheTimeout = TimeSpan.FromSeconds(3);
         readonly MonqAuthorizationOptions? _options;
+        readonly Stopwatch _sw = new Stopwatch();
 
         static IEnumerable<string> _forwardedHeaders { get; }
             = new[] { "x-trace-event-id", "x-smon-userspace-id" };
@@ -40,14 +50,17 @@ namespace Monq.Core.Authorization.Middleware
         /// <param name="configuration">Конфигурация приложения <see cref="IConfiguration" />.</param>
         /// <param name="options">The options.</param>
         /// <param name="loggerFactory">Фабрика конфигурирования инструментария логирования <see cref="ILogger" />.</param>
+        /// <param name="httpClientFactory">Http Client Factory.</param>
         /// <param name="httpMessageHandler">Обработчик HTTP-запросов.</param>
         public MonqAuthorizationMiddleware(
             RequestDelegate next,
             IConfiguration configuration,
             MonqAuthorizationOptions? options,
             ILoggerFactory loggerFactory,
+            IHttpClientFactory httpClientFactory,
             HttpMessageHandler? httpMessageHandler = null)
         {
+            _httpClientFactory = httpClientFactory;
             _options = options;
             _next = next;
             _userGrantsApiUri = configuration[_servicesBaseUri];
@@ -64,14 +77,17 @@ namespace Monq.Core.Authorization.Middleware
         /// <param name="configuration">Конфигурация приложения <see cref="IConfiguration" />.</param>
         /// <param name="options">The options.</param>
         /// <param name="logger">Инструментарий логирования <see cref="ILogger" />.</param>
+        /// <param name="httpClientFactory">Http Client Factory.</param>
         /// <param name="httpMessageHandler">Обработчик HTTP-запросов.</param>
         public MonqAuthorizationMiddleware(
             RequestDelegate next,
             IConfiguration configuration,
             MonqAuthorizationOptions? options,
             ILogger<MonqAuthorizationMiddleware> logger,
+            IHttpClientFactory httpClientFactory,
             HttpMessageHandler? httpMessageHandler = null)
         {
+            _httpClientFactory = httpClientFactory;
             _options = options;
             _next = next;
             _userGrantsApiUri = configuration[_servicesBaseUri];
@@ -86,9 +102,14 @@ namespace Monq.Core.Authorization.Middleware
         /// <param name="context">Инкапсуляция данных HTTP-вызова.</param>
         public async Task InvokeAsync(HttpContext context)
         {
+            _logger.LogDebug("Start updating user grants.");
+            _sw.Reset();
+            _sw.Start();
             var isSystemUser = context.User.IsSystemUser();
             if (isSystemUser)
             {
+                _sw.Stop();
+                _logger.LogDebug("Updating user grants competed at {ElapsedMilliseconds} ms. User is system user. Skip checking.", _sw.ElapsedMilliseconds);
                 await _next(context);
                 return;
             }
@@ -96,11 +117,13 @@ namespace Monq.Core.Authorization.Middleware
             var subjectId = context.User.Subject();
             if (subjectId == 0)
             {
+                _logger.LogDebug("Updating user grants competed at {ElapsedMilliseconds} ms. Claim sub == 0. Skip checking.", _sw.ElapsedMilliseconds);
                 await _next(context);
                 return;
             }
 
             await UpdateGrantsAsync(context);
+            _logger.LogDebug("Updating user grants competed at {ElapsedMilliseconds} ms.", _sw.ElapsedMilliseconds);
             await _next(context);
         }
 
@@ -108,19 +131,22 @@ namespace Monq.Core.Authorization.Middleware
         /// Обновить хранилище прав пользователя с сервера авторизации.
         /// </summary>
         /// <param name="context">Инкапсуляция данных HTTP-вызова.</param>
-        async Task UpdateGrantsAsync(HttpContext context)
+        async ValueTask UpdateGrantsAsync(HttpContext context)
         {
             var userId = context.User.Subject();
-            var userGrants = await GetUserPacketsAsync(context, userId);
-            PacketRepository.Set(userId, userGrants);
+            if (PacketRepository.NotExistsOrExpired(userId))
+            {
+                var userGrants = await GetUserPacketsAsync(context, userId);
+                PacketRepository.Set(userId, userGrants, _cacheTimeout);
+            }
         }
 
         /// <summary>
-        /// Получить пакеты прав пользователя.
+        /// Получить список пакетов прав пользователя.
         /// </summary>
         /// <param name="context">Инкапсуляция данных HTTP-вызова.</param>
         /// <param name="userId">Идентификатор пользователя запроса.</param>
-        async Task<IEnumerable<PacketViewModel>> GetUserPacketsAsync(HttpContext context, long userId)
+        async ValueTask<IEnumerable<PacketViewModel>> GetUserPacketsAsync(HttpContext context, long userId)
         {
             var token = string.Empty;
             if (_options?.GetAccessToken != null)
@@ -130,7 +156,7 @@ namespace Monq.Core.Authorization.Middleware
             if (_options?.GetUserspaceId != null)
                 userspaceId = await _options.GetUserspaceId(context);
 
-            using var client = _httpMessageHandler is null ? new HttpClient() : new HttpClient(_httpMessageHandler);
+            var client = _httpMessageHandler is not null ? new HttpClient(_httpMessageHandler) : _httpClientFactory.CreateClient();
 
             if (!string.IsNullOrEmpty(token))
                 client.SetBearerToken(token);
@@ -144,12 +170,10 @@ namespace Monq.Core.Authorization.Middleware
 
                 client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value.ToString());
             }
-            var userGrants = RequestUserPacketsAsync(userId, client);
-            await Task.WhenAll(userGrants);
-            return userGrants.Result;
+            return await RequestUserPacketsAsync(userId, client);
         }
 
-        async Task<IEnumerable<PacketViewModel>> RequestUserPacketsAsync(long userId, HttpClient client)
+        async ValueTask<IEnumerable<PacketViewModel>> RequestUserPacketsAsync(long userId, HttpClient client)
         {
             try
             {
@@ -157,11 +181,12 @@ namespace Monq.Core.Authorization.Middleware
                     .GetStringAsync(new Uri(
                         new Uri(_userGrantsApiUri),
                         $"/api/pl/user-grants/users/{userId}/packets"));
-                return JsonConvert.DeserializeObject<IEnumerable<PacketViewModel>>(response);
+                return JsonSerializer.Deserialize<IEnumerable<PacketViewModel>>(response, _jsonSerializationOptions)
+                    ?? Array.Empty<PacketViewModel>();
             }
             catch (HttpRequestException e)
             {
-                _logger.LogError(new EventId(), e, e.Message, e);
+                _logger.LogError(e, e.Message);
                 return Array.Empty<PacketViewModel>();
             }
         }
