@@ -16,6 +16,7 @@ using Xunit;
 namespace Monq.Core.Authorization.Tests
 {
 #pragma warning disable IDE0021 // Use expression body for constructors
+    [Collection("Serial")]
     public class MonqAuthorizationMiddlewareTests
     {
         readonly IConfiguration _config;

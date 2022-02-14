@@ -16,6 +16,7 @@ namespace Monq.Core.Authorization.Tests
 {
 #pragma warning disable RCS1123 // Add parentheses according to operator precedence.
 #pragma warning disable CA1822 // Mark members as static
+    [Collection("Serial")]
     public class GrantsExtensionsTests
     {
         const sbyte _userspaceAdminPacketId = 1;
