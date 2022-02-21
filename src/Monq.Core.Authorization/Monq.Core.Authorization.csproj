@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>4.6.7</Version>
+    <Version>4.7.0</Version>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Version Condition=" '$(VersionSuffix)' != '' ">$(Version)-$(VersionSuffix)</Version>
     <IsPackable>true</IsPackable>
@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.1" />
     <PackageReference Include="Monq.Core.Authorization.Models" Version="5.0.1" />
   </ItemGroup>
 

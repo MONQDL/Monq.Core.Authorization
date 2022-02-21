@@ -1,0 +1,15 @@
+﻿{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Monq.Core.Authorization.SampleApi": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "launchUrl": "weatherforecast",
+      "applicationUrl": "http://0.0.0.0:5182",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
