@@ -102,6 +102,13 @@ namespace Monq.Core.Authorization.Middleware
         /// <param name="context">Инкапсуляция данных HTTP-вызова.</param>
         public async Task InvokeAsync(HttpContext context)
         {
+            if (!IsTokenValid(context))
+            {
+                context.Response.StatusCode = 401;
+                _logger.LogDebug($"Token is invalid.");
+                return;
+            }
+
             _logger.LogDebug("Start updating user grants.");
             _sw.Reset();
             _sw.Start();
@@ -189,6 +196,17 @@ namespace Monq.Core.Authorization.Middleware
                 _logger.LogError(e, e.Message);
                 return Array.Empty<PacketViewModel>();
             }
+        }
+
+        bool IsTokenValid(HttpContext context)
+        {
+            var claimUserspaceId = context.User.Claims?.FirstOrDefault(claim => claim.Type == "userspaceId");
+            // Старые и самовыписные токены не имеют в клаймах userspaceId. Являются валидными.
+            if (claimUserspaceId == null) return true;
+
+            // Для новых токенов проверяем, что userspaceId из заголовка соответсвует userspaceId из клаймов токена.
+            context.Request.Headers.TryGetValue("X-Smon-Userspace-Id", out var headerUserspaceId);
+            return headerUserspaceId == claimUserspaceId.Value;
         }
     }
 }
