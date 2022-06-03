@@ -46,8 +46,9 @@ namespace Microsoft.AspNetCore.Authorization
         /// Получить права пользователя из <see cref="ClaimsPrincipal"/>.
         /// </summary>
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
+        /// <param name="userspaceId">Идентификатор userspace.</param>
         /// <returns>Коллекция пакетов прав пользователя <see cref="IEnumerable{PacketViewModel}"/>.</returns>
-        public IEnumerable<PacketViewModel> Packets(ClaimsPrincipal? user)
+        public IEnumerable<PacketViewModel> Packets(ClaimsPrincipal? user, long userspaceId)
         {
             if (user is null)
                 return Array.Empty<PacketViewModel>();
@@ -56,7 +57,7 @@ namespace Microsoft.AspNetCore.Authorization
             if (userId <= 0)
                 return Array.Empty<PacketViewModel>();
 
-            var packets = PacketRepository.Get(userId);
+            var packets = PacketRepository.Get(userId, userspaceId.ToString());
             return packets;
         }
 
@@ -89,7 +90,7 @@ namespace Microsoft.AspNetCore.Authorization
             if (user is null || !grantNames.Any())
                 return false;
 
-            var packets = user.Packets();
+            var packets = user.Packets(userspaceId);
 
             //Проверка прав админ. панели.
             var adminPanelGrants = grantNames.Where(x => x.IndexOf(Modules.GrantType.AdminsGrantPrefix, StringComparison.Ordinal) == 0);
@@ -130,7 +131,7 @@ namespace Microsoft.AspNetCore.Authorization
                 return false;
             }
 
-            var packets = user.Packets();
+            var packets = user.Packets(userspaceId);
 
             if (!packets.Any())
             {
@@ -179,7 +180,7 @@ namespace Microsoft.AspNetCore.Authorization
             if (garnts?.Any() != true)
                 return false;
 
-            var packets = user.Packets();
+            var packets = user.Packets(userspaceId);
             if (!packets.Any())
                 return false;
 
@@ -249,7 +250,7 @@ namespace Microsoft.AspNetCore.Authorization
                 return Array.Empty<long>();
             }
 
-            var packets = user.Packets();
+            var packets = user.Packets(userspaceId);
 
             if (!packets.Any())
             {
@@ -284,7 +285,7 @@ namespace Microsoft.AspNetCore.Authorization
                 return Array.Empty<long>();
             }
 
-            var packets = user.Packets();
+            var packets = user.Packets(userspaceId);
 
             if (!packets.Any())
             {
@@ -325,22 +326,9 @@ namespace Microsoft.AspNetCore.Authorization
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
         /// <returns>Список идентификаторов рабочих групп, в которых у пользователя есть какое-либо право.</returns>
         public IEnumerable<long> WorkGroups(ClaimsPrincipal? user, long userspaceId)
-            => Packets(user)
+            => Packets(user, userspaceId)
                 .SelectMany(val => val.Owners)
                 .Select(val => val.WorkGroupId)
-                .Distinct()
-                .ToList();
-
-        /// <summary>
-        /// Получить Id пространств пользователя, в которых у пользователя из <see cref="ClaimsPrincipal"/>
-        /// есть какие-либо права.
-        /// </summary>
-        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-        /// <returns>Список идентификаторов пространств пользователя, в которых у пользователя есть какое-либо право.</returns>
-        public IEnumerable<long> Userspaces(ClaimsPrincipal? user)
-            => Packets(user)
-                .SelectMany(val => val.Owners)
-                .Select(val => val.UserspaceId)
                 .Distinct()
                 .ToList();
 

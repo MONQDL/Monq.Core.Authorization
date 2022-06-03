@@ -128,34 +128,35 @@ namespace Monq.Core.Authorization.Middleware
         }
 
         /// <summary>
-        /// Обновить хранилище прав пользователя с сервера авторизации.
+        /// Update the user packets repository from the authorization server.
         /// </summary>
-        /// <param name="context">Инкапсуляция данных HTTP-вызова.</param>
+        /// <param name="context">Encapsulation of HTTP call data.</param>
         async ValueTask UpdateGrantsAsync(HttpContext context)
         {
-            var userId = context.User.Subject();
-            if (PacketRepository.NotExistsOrExpired(userId))
-            {
-                var userGrants = await GetUserPacketsAsync(context, userId);
-                PacketRepository.Set(userId, userGrants, _cacheTimeout);
-            }
-        }
-
-        /// <summary>
-        /// Получить список пакетов прав пользователя.
-        /// </summary>
-        /// <param name="context">Инкапсуляция данных HTTP-вызова.</param>
-        /// <param name="userId">Идентификатор пользователя запроса.</param>
-        async ValueTask<IEnumerable<PacketViewModel>> GetUserPacketsAsync(HttpContext context, long userId)
-        {
-            var token = string.Empty;
-            if (_options?.GetAccessToken != null)
-                token = await _options.GetAccessToken(context);
-
             var userspaceId = string.Empty;
             if (_options?.GetUserspaceId != null)
                 userspaceId = await _options.GetUserspaceId(context);
 
+            var userId = context.User.Subject();
+            if (PacketRepository.NotExistsOrExpired(userId, userspaceId))
+            {
+                var userGrants = await GetUserPacketsAsync(context, userId, userspaceId);
+                PacketRepository.Set(userId, userspaceId, userGrants, _cacheTimeout);
+            }
+        }
+
+        /// <summary>
+        /// Get a list of user packets.
+        /// </summary>
+        /// <param name="context">Encapsulation of HTTP call data.</param>
+        /// <param name="userId">User identifier.</param>
+        /// <param name="userspaceId">Userspace identifier.</param>
+        async ValueTask<IEnumerable<PacketViewModel>> GetUserPacketsAsync(HttpContext context, long userId, string userspaceId)
+        {
+            var token = string.Empty;
+            if (_options?.GetAccessToken != null)
+                token = await _options.GetAccessToken(context);
+            
             var client = _httpMessageHandler is not null ? new HttpClient(_httpMessageHandler) : _httpClientFactory.CreateClient();
 
             if (!string.IsNullOrEmpty(token))

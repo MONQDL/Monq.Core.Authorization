@@ -131,7 +131,7 @@ namespace Monq.Core.Authorization.Tests
                 null,
                 It.IsAny<Func<string, Exception, string>>()));
 
-            var packets = userPrincipal.Packets();
+            var packets = userPrincipal.Packets(userspaceId);
 
             Assert.NotEmpty(packets);
             Assert.Single(packets);
