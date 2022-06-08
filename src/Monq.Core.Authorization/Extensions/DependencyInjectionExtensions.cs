@@ -38,7 +38,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         static MonqAuthorizationOptions CreateDefaultOptions() => new MonqAuthorizationOptions
         {
-            GetAccessToken = HttpContextExtensions.GetToken
+            GetAccessToken = HttpContextExtensions.GetToken,
+            GetUserspaceId = HttpContextExtensions.GetUserspaceId
         };
     }
 }

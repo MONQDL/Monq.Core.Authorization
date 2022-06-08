@@ -8,10 +8,11 @@ namespace Monq.Core.Authorization.Extensions
     public static class HttpContextExtensions
     {
         const string Authorization = "Authorization";
+        const string UserspaceId = "x-smon-userspace-id";
         const string Bearer = "Bearer";
 
         /// <summary>
-        /// Получить access token из заголовка запроса HttpContext.
+        /// Get access token from HttpContext request header.
         /// </summary>
         /// <param name="context">The context.</param>
         public static Task<string> GetToken(this HttpContext context)
@@ -29,6 +30,16 @@ namespace Monq.Core.Authorization.Extensions
 
             var token = authHeader.Replace(Bearer, string.Empty).TrimStart();
             return Task.FromResult(token);
+        }
+
+        /// <summary>
+        /// Get UserpaceId from the HttpContext request header.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        public static Task<string> GetUserspaceId(this HttpContext context)
+        {
+            var userspaceHeader = context.Request.Headers[UserspaceId].FirstOrDefault();
+            return Task.FromResult(userspaceHeader ?? string.Empty);
         }
     }
 }

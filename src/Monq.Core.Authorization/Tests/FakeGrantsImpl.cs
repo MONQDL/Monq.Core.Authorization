@@ -57,8 +57,7 @@ namespace Monq.Core.Authorization.Tests
 
         /// <summary>
         /// Проверить есть ли у пользователя
-        /// с данным идентификатором <paramref name="userspaceId"/>
-        /// парво из админ. панели.
+        /// право из админ. панели.
         /// </summary>
         public Func<ClaimsPrincipal, long, string, bool>? HasUserspaceAdminPanelGrantFunc { get; set; }
 
@@ -118,9 +117,10 @@ namespace Monq.Core.Authorization.Tests
         /// Получить права пользователя из <see cref="ClaimsPrincipal"/>.
         /// </summary>
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
+        /// <param name="userspaceId">Идентификатор userspace.</param>
         /// <returns>Коллекция пакетов прав пользователя <see cref="IEnumerable{PacketViewModel}"/>.</returns>
-        public IEnumerable<PacketViewModel> Packets(ClaimsPrincipal user) =>
-            PacketsFunc?.Invoke(user) ?? _defaultImpl.Packets(user);
+        public IEnumerable<PacketViewModel> Packets(ClaimsPrincipal user, long userspaceId) =>
+            PacketsFunc?.Invoke(user) ?? _defaultImpl.Packets(user, userspaceId);
 
         /// <summary>
         /// Проверить, есть ли все заданные права у пользователя из <see cref="ClaimsPrincipal"/>.
@@ -253,15 +253,6 @@ namespace Monq.Core.Authorization.Tests
         /// <returns>Список идентификаторов рабочих групп, в которых у пользователя есть какое-либо право.</returns>
         public IEnumerable<long> WorkGroups(ClaimsPrincipal user, long userspaceId) =>
             WorkGroupsFunc?.Invoke(user, userspaceId) ?? _defaultImpl.WorkGroups(user, userspaceId);
-
-        /// <summary>
-        /// Получить Id пространств пользователя, в которых у пользователя из <see cref="ClaimsPrincipal"/>
-        /// есть какие-либо права.
-        /// </summary>
-        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-        /// <returns>Список идентификаторов пространств пользователя, в которых у пользователя есть какое-либо право.</returns>
-        public IEnumerable<long> Userspaces(ClaimsPrincipal user) =>
-            UserspacesFunc?.Invoke(user) ?? _defaultImpl.Userspaces(user);
 
         /// <summary>
         /// Получить Id пользовательского пространства из заголовков <see cref="HttpRequest"/> исполняемого запроса.

@@ -23,8 +23,9 @@ namespace Microsoft.AspNetCore.Authorization
         /// Получить права пользователя из <see cref="ClaimsPrincipal"/>.
         /// </summary>
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
+        /// <param name="userspaceId">Идентификатор userspace.</param>
         /// <returns>Коллекция пакетов прав пользователя <see cref="IEnumerable{PacketViewModel}"/>.</returns>
-        IEnumerable<PacketViewModel> Packets(ClaimsPrincipal user);
+        IEnumerable<PacketViewModel> Packets(ClaimsPrincipal user, long userspaceId);
 
         /// <summary>
         /// Проверить, есть ли заданное именем право у пользователя из <see cref="ClaimsPrincipal"/>.
@@ -164,14 +165,6 @@ namespace Microsoft.AspNetCore.Authorization
         /// Список идентификаторов рабочих групп, в которых у пользователя есть какое-либо право.
         /// </returns>
         IEnumerable<long> WorkGroups(ClaimsPrincipal user, long userspaceId);
-
-        /// <summary>
-        /// Получить Id пространств пользователя, в которых у пользователя из <see cref="ClaimsPrincipal"/>
-        /// есть какие-либо права.
-        /// </summary>
-        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-        /// <returns>Список идентификаторов пространств пользователя, в которых у пользователя есть какое-либо право.</returns>
-        IEnumerable<long> Userspaces(ClaimsPrincipal user);
 
         /// <summary>
         /// Получить Id пользовательского пространства из заголовков <see cref="HttpRequest"/> исполняемого запроса.

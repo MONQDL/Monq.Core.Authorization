@@ -26,12 +26,13 @@ namespace Microsoft.AspNetCore.Authorization
             => Implementation.Subject(user);
 
         /// <summary>
-        /// Получить права пользователя из <see cref="ClaimsPrincipal"/>.
+        /// Get user packets from <see cref="ClaimsPrincipal"/>.
         /// </summary>
-        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-        /// <returns>Коллекция пакетов прав пользователя <see cref="IEnumerable{PacketViewModel}"/>.</returns>
-        public static IEnumerable<PacketViewModel> Packets(this ClaimsPrincipal user)
-            => Implementation.Packets(user);
+        /// <param name="user">User.</param>
+        /// <param name="userspaceId">Identifier userspace.</param>
+        /// <returns>Collection of user packets <see cref="IEnumerable{PacketViewModel}"/>.</returns>
+        public static IEnumerable<PacketViewModel> Packets(this ClaimsPrincipal user, in long userspaceId)
+            => Implementation.Packets(user, userspaceId);
 
         /// <summary>
         /// Проверить, есть ли заданное именем право у пользователя из <see cref="ClaimsPrincipal"/>.
@@ -184,15 +185,6 @@ namespace Microsoft.AspNetCore.Authorization
         /// </returns>
         public static IEnumerable<long> WorkGroups(this ClaimsPrincipal user, in long userspaceId)
             => Implementation.WorkGroups(user, userspaceId);
-
-        /// <summary>
-        /// Получить Id пространств пользователя, в которых у пользователя из <see cref="ClaimsPrincipal"/>
-        /// есть какие-либо права.
-        /// </summary>
-        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-        /// <returns>Список идентификаторов пространств пользователя, в которых у пользователя есть какое-либо право.</returns>
-        public static IEnumerable<long> Userspaces(this ClaimsPrincipal user)
-            => Implementation.Userspaces(user);
 
         /// <summary>
         /// Получить Id пользовательского пространства из заголовков <see cref="HttpRequest"/> исполняемого запроса.
