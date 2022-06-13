@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Monq.Core.Authorization.Models;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using Monq.Core.Authorization.Models;
 
 namespace Monq.Core.Authorization.Tests
 {
@@ -48,7 +48,7 @@ namespace Monq.Core.Authorization.Tests
         [Obsolete("Использовать HasUsersEntitiesGrant.")]
         public Func<ClaimsPrincipal, long, bool>? IsUserspaceAdminFunc { get; set; }
 
-       
+
         /// <summary>
         /// Проверить, есть ли у пользователь
         /// из <see cref="ClaimsPrincipal"/> доступ к пользовательским сущностям.
@@ -172,7 +172,7 @@ namespace Monq.Core.Authorization.Tests
         public bool HasUserspaceAdminPanelGrant(ClaimsPrincipal? user, long userspaceId, string adminPanelGrant) =>
             HasUserspaceAdminPanelGrantFunc?.Invoke(user, userspaceId, adminPanelGrant) ??
             _defaultImpl.HasUserspaceAdminPanelGrant(user, userspaceId, adminPanelGrant);
-        
+
         /// <inheritdoc />
         public bool HasAnyUserspaceAdminPanelGrant(ClaimsPrincipal? user, long userspaceId, IEnumerable<string> adminPanelGrants) =>
             HasAnyUserspaceAdminPanelGrantFunc?.Invoke(user, userspaceId, adminPanelGrants) ??

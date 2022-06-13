@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Monq.Core.Authorization.Exceptions;
 using Monq.Core.Authorization.Helpers;
+using Monq.Core.Authorization.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Monq.Core.Authorization.Models;
 using Xunit;
 
 namespace Monq.Core.Authorization.Tests
@@ -258,7 +258,7 @@ namespace Monq.Core.Authorization.Tests
 
             var packetToSet = TestData.CreatePacketWithUserEntitiesGrant(
                 packetId, userspaceId, workGroupId, userId);
-            
+
             PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
 
             var hasGrant = claim.HasGrant(userspaceId, falseWorkGroupId, Modules.GrantType.AdminsUserEntitiesWrite);
@@ -305,7 +305,7 @@ namespace Monq.Core.Authorization.Tests
             var packetToSet = TestData.CreatePacketWithUserEntitiesGrant(
                 packetId, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet); 
+            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
 
             var hasGrant = claim.HasUserspaceAdminPanelGrant(userspaceId, Modules.GrantType.AdminsUserEntitiesWrite);
             Assert.True(hasGrant);
@@ -327,13 +327,13 @@ namespace Monq.Core.Authorization.Tests
             var packetToSet = TestData.CreatePacketWithUserEntitiesGrant(
                 packetId, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet); 
+            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
 
             var hasAnyGrant = claim.HasAnyUserspaceAdminPanelGrant(userspaceId, new List<string>{
                 Modules.GrantType.AdminsUserEntitiesWrite, Modules.GrantType.WorkGroupDeliveriesRead});
             Assert.True(hasAnyGrant);
         }
-        
+
         [Theory(DisplayName = "GrantsExtensions: HasGrant(): Проверка ложь при проверке права из админ. панели.")]
         [InlineData(sbyte.MaxValue)]
         [InlineData(byte.MaxValue)]
@@ -351,7 +351,7 @@ namespace Monq.Core.Authorization.Tests
             var packetToSet = TestData.CreatePacketWithRandomGrant(sporadic,
                 packetId, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet); 
+            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
 
             var hasGrant = claim.HasGrant(userspaceId, falseWorkGroupId, Modules.GrantType.AdminsUserEntitiesWrite);
             Assert.False(hasGrant);
@@ -374,7 +374,7 @@ namespace Monq.Core.Authorization.Tests
             var packetToSet = TestData.CreatePacketWithRandomGrant(sporadic,
                 packetId, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet); 
+            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
 
             var hasAnyGrant = claim.HasAnyGrant(userspaceId, falseWorkGroupId, new List<string>{
                 Modules.GrantType.AdminsUserEntitiesWrite, Modules.GrantType.WorkGroupDeliveriesRead});
@@ -397,7 +397,7 @@ namespace Monq.Core.Authorization.Tests
             var packetToSet = TestData.CreatePacketWithGrant(
                 packetId, userspaceId, workGroupId, userId, Modules.GrantType.WorkGroupDeliveriesRead);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet); 
+            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
 
             var hasGrant = claim.HasUserspaceAdminPanelGrant(userspaceId, Modules.GrantType.AdminsUserEntitiesWrite);
             Assert.False(hasGrant);
@@ -419,13 +419,13 @@ namespace Monq.Core.Authorization.Tests
             var packetToSet = TestData.CreatePacketWithGrant(
                 packetId, userspaceId, workGroupId, userId, Modules.GrantType.WorkGroupDeliveriesRead);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet); 
+            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
 
             var hasAnyGrant = claim.HasAnyUserspaceAdminPanelGrant(userspaceId, new List<string>{
                 Modules.GrantType.AdminsUserEntitiesWrite, Modules.GrantType.WorkGroupDeliveriesRead});
             Assert.False(hasAnyGrant);
         }
-        
+
         [Theory(DisplayName = "GrantsExtensions: HasAnyAdminPanelGrant(): Проверка истина администратору пространства даже при ошибке рабочей группы.")]
         [InlineData(sbyte.MaxValue)]
         [InlineData(byte.MaxValue)]
@@ -439,7 +439,7 @@ namespace Monq.Core.Authorization.Tests
             var userspaceId = sporadic.GetId();
 
             var packetToSet = TestData.CreatePacket(packetId, userspaceId, workGroupId, userId);
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet); 
+            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
 
             var requestUserId = sporadic.GetId();
 
@@ -468,7 +468,7 @@ namespace Monq.Core.Authorization.Tests
 
             var packetToSet = TestData.CreatePacketWithRandomGrant(sporadic, packetId1, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet); 
+            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
             var additionalPacketToRequest = TestData.CreatePacketWithRandomGrant(sporadic, packetId2, userspaceId, workGroupId, userId);
@@ -526,7 +526,7 @@ namespace Monq.Core.Authorization.Tests
             var userspaceId = sporadic.GetId();
 
             var packetToSet = TestData.CreatePacket(packetId, userspaceId, workGroupId, userId);
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet); 
+            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
 
             var requestUserId = sporadic.GetId();
 
@@ -578,7 +578,7 @@ namespace Monq.Core.Authorization.Tests
 
             var packetToSet = TestData.CreatePacketWithRandomGrant(sporadic, packetId1, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet); 
+            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
             var additionalGrantToRequest = TestData.CreatePacketWithRandomGrant(sporadic, packetId2, userspaceId, workGroupId, userId);
@@ -601,7 +601,7 @@ namespace Monq.Core.Authorization.Tests
 
             var packetToSet = TestData.CreatePacketWithRandomGrant(sporadic, packetId1, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet); 
+            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
             var additionalGrantToRequest = TestData.CreatePacketWithRandomGrant(sporadic, packetId2, userspaceId, workGroupId, userId);
@@ -640,7 +640,7 @@ namespace Monq.Core.Authorization.Tests
             var userspaceId = sporadic.GetId();
 
             var packetToSet = TestData.CreatePacket(packetId, userspaceId, workGroupId, userId);
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet); 
+            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
 
             var requestUserId = sporadic.GetId();
 
@@ -668,7 +668,7 @@ namespace Monq.Core.Authorization.Tests
             var userspaceId = sporadic.GetId();
 
             var packetToSet = TestData.CreatePacketWithUserEntitiesGrant(_userspaceAdminPacketId, userspaceId, workGroupId, userId);
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet); 
+            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
 
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
@@ -690,7 +690,7 @@ namespace Monq.Core.Authorization.Tests
             var userspaceId = sporadic.GetId();
 
             var packetToSet = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, userId);
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet); 
+            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
 
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
@@ -712,7 +712,7 @@ namespace Monq.Core.Authorization.Tests
 
             var packetToSet = TestData.CreatePacketWithRandomGrant(sporadic, packetId, 10, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet); 
+            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
             var isUserspaceAdmin = claim.IsUserspaceAdmin(userspaceId);
@@ -792,7 +792,7 @@ namespace Monq.Core.Authorization.Tests
             var userspaceId = sporadic.GetId();
 
             var packetToSet = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, userId);
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet); 
+            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
 
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
@@ -1114,7 +1114,7 @@ namespace Monq.Core.Authorization.Tests
             var userspaceId = sporadic.GetRandomModuleName();
             httpContext.Request.Headers.Add("x-smon-userspace-id", new StringValues(userspaceId));
 
-            const string expectedResult = "Невозможно выполнить преобразование id пространства пользователя из заголовка x-smon-userspace-id в корректное значение.";
+            const string expectedResult = "Unable to convert userspace ID from header x-smon-userspace-id to valid value.";
             var result = Assert.Throws<UserspaceNotFoundException>(() => httpContext.Request.Userspace());
             Assert.Equal(expectedResult, result.Message);
         }
@@ -1126,7 +1126,7 @@ namespace Monq.Core.Authorization.Tests
 
             httpContext.Request.Headers.Add("x-smon-userspace-id", new StringValues());
 
-            const string expectedResult = "Не указан заголовок x-smon-userspace-id.";
+            const string expectedResult = "Header x-smon-userspace-id not defined.";
             var result = Assert.Throws<UserspaceNotFoundException>(() => httpContext.Request.Userspace());
             Assert.Equal(expectedResult, result.Message);
         }
@@ -1136,7 +1136,7 @@ namespace Monq.Core.Authorization.Tests
         {
             var httpContext = new DefaultHttpContext();
 
-            const string expectedResult = "Не указан заголовок x-smon-userspace-id.";
+            const string expectedResult = "Header x-smon-userspace-id not defined.";
             var result = Assert.Throws<UserspaceNotFoundException>(() => httpContext.Request.Userspace());
             Assert.Equal(expectedResult, result.Message);
         }

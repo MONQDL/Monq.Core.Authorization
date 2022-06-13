@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Monq.Core.Authorization.Models;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Monq.Core.Authorization.Models;
 
 [assembly: InternalsVisibleTo("Monq.Core.Authorization.Tests")]
 
@@ -23,7 +23,7 @@ namespace Monq.Core.Authorization.Helpers
         /// <param name="userspaceId">Userspace identifier.</param>
         /// <returns>Collection of user packets <see cref="IEnumerable{PacketViewModel}"/>.</returns>
         public static IEnumerable<PacketViewModel> Get(long userId, string? userspaceId)
-            => _packets.TryGetValue(new CachedUser { UserId = userId, UserspaceId = userspaceId}, out var cachedItem) ? cachedItem.Packets : Array.Empty<PacketViewModel>();
+            => _packets.TryGetValue(new CachedUser { UserId = userId, UserspaceId = userspaceId }, out var cachedItem) ? cachedItem.Packets : Array.Empty<PacketViewModel>();
 
         /// <summary>
         /// Check the userId grants for the expiration.

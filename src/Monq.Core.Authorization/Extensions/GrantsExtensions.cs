@@ -1,8 +1,8 @@
-﻿using System;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
+using Monq.Core.Authorization.Models;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using Monq.Core.Authorization.Models;
 
 namespace Microsoft.AspNetCore.Authorization
 {
