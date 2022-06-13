@@ -156,7 +156,7 @@ namespace Monq.Core.Authorization.Middleware
             var token = string.Empty;
             if (_options?.GetAccessToken != null)
                 token = await _options.GetAccessToken(context);
-            
+
             var client = _httpMessageHandler is not null ? new HttpClient(_httpMessageHandler) : _httpClientFactory.CreateClient();
 
             if (!string.IsNullOrEmpty(token))

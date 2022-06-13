@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Monq.Core.Authorization;
 using Monq.Core.Authorization.Exceptions;
 using Monq.Core.Authorization.Helpers;
 using Monq.Core.Authorization.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 
 namespace Microsoft.AspNetCore.Authorization
 {
@@ -346,7 +346,7 @@ namespace Microsoft.AspNetCore.Authorization
 
             if (string.IsNullOrWhiteSpace(userspaceIdHeaderKey))
             {
-                throw new UserspaceNotFoundException($"Не указан заголовок {UserspaceIdHeader}.");
+                throw new UserspaceNotFoundException($"Header {UserspaceIdHeader} not defined.");
             }
 
             // Получаем значение полученным в верном регистре ключом.
@@ -354,12 +354,12 @@ namespace Microsoft.AspNetCore.Authorization
 
             if (string.IsNullOrWhiteSpace(userspaceIdHeaderValue))
             {
-                throw new UserspaceNotFoundException($"Не указан заголовок {UserspaceIdHeader}.");
+                throw new UserspaceNotFoundException($"Header {UserspaceIdHeader} not defined.");
             }
 
             if (!long.TryParse(userspaceIdHeaderValue, out var userspaceId))
             {
-                throw new UserspaceNotFoundException($"Невозможно выполнить преобразование id пространства пользователя из заголовка {UserspaceIdHeader} в корректное значение.");
+                throw new UserspaceNotFoundException($"Unable to convert userspace ID from header {UserspaceIdHeader} to valid value.");
             }
 
             return userspaceId;

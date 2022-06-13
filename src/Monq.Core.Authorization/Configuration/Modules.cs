@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Monq.Core.Authorization
+﻿namespace Monq.Core.Authorization
 {
     // TODO: Подумать от том, чтобы сделать открытым.
     // TODO: В таком случае, придётся делать "конструктор", чтобы не возникало курьёзов в духе cloud-management.rsm.users-write.
