@@ -93,7 +93,7 @@ namespace Microsoft.AspNetCore.Authorization
             var packets = user.Packets(userspaceId);
 
             //Проверка прав админ. панели.
-            var adminPanelGrants = grantNames.Where(x => x.IndexOf(Modules.GrantType.AdminsGrantPrefix, StringComparison.Ordinal) == 0);
+            var adminPanelGrants = grantNames.Where(x => x.Contains(Modules.GrantType.AdminsGrantSuffix, StringComparison.Ordinal));
             if (adminPanelGrants?.Any() == true)
             {
                 var hasAdminPanelPackets = HasAnyUserspaceAdminPanelGrant(user, userspaceId, adminPanelGrants);
@@ -176,8 +176,8 @@ namespace Microsoft.AspNetCore.Authorization
             if (user is null || adminPanelGrantNames?.Any() != true)
                 return false;
 
-            var garnts = adminPanelGrantNames.Where(x => x.IndexOf(Modules.GrantType.AdminsGrantPrefix, StringComparison.Ordinal) == 0);
-            if (garnts?.Any() != true)
+            var grants = adminPanelGrantNames.Where(x => x.Contains(Modules.GrantType.AdminsGrantSuffix, StringComparison.Ordinal));
+            if (grants?.Any() != true)
                 return false;
 
             var packets = user.Packets(userspaceId);
@@ -185,7 +185,7 @@ namespace Microsoft.AspNetCore.Authorization
                 return false;
 
             var userHasAnyGrant = packets
-                .Where(val => garnts.Any(val.Grants.Contains))  // Фильтруем пакеты по наличию (любого) права.
+                .Where(val => grants.Any(val.Grants.Contains))  // Фильтруем пакеты по наличию (любого) права.
                 .SelectMany(val => val.Owners)                      // Получаем владельцев оставшихся пакетов.
                 .Any(val => val.UserspaceId == userspaceId);        // И выясняем, находится ли владелец в пространстве.
             return userHasAnyGrant;

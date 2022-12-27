@@ -33,9 +33,9 @@
             internal const string AdminsUserEntitiesWrite = "pl.admins.user-entities-write";
 
             /// <summary>
-            /// Префикс прав админ. панели.
+            /// Суффикс прав админ. панели.
             /// </summary>
-            internal const string AdminsGrantPrefix = "pl.admins.";
+            internal const string AdminsGrantSuffix = ".admins.";
         }
     }
 }
