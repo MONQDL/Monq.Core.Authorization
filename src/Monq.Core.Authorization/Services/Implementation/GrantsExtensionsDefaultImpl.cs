@@ -52,12 +52,12 @@ namespace Microsoft.AspNetCore.Authorization
         {
             if (user is null)
                 return Array.Empty<PacketViewModel>();
-
+            
             var userId = user.Subject();
             if (userId <= 0)
                 return Array.Empty<PacketViewModel>();
 
-            var packets = PacketRepository.Get(userId, userspaceId.ToString());
+            var packets = PacketRepository.Get(userId, userspaceId.ToString(), user.ObjectKey());
             return packets;
         }
 

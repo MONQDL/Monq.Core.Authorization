@@ -137,11 +137,13 @@ namespace Monq.Core.Authorization.Middleware
             if (_options?.GetUserspaceId != null)
                 userspaceId = await _options.GetUserspaceId(context);
 
+            var user = context.User;
             var userId = context.User.Subject();
-            if (PacketRepository.NotExistsOrExpired(userId, userspaceId))
+            var key = user.ObjectKey();
+            if (PacketRepository.NotExistsOrExpired(userId, userspaceId, key))
             {
                 var userGrants = await GetUserPacketsAsync(context, userId, userspaceId);
-                PacketRepository.Set(userId, userspaceId, userGrants, _cacheTimeout);
+                PacketRepository.Set(userId, userspaceId, key, userGrants, _cacheTimeout);
             }
         }
 
@@ -153,11 +155,11 @@ namespace Monq.Core.Authorization.Middleware
         /// <param name="userspaceId">Userspace identifier.</param>
         async ValueTask<IEnumerable<PacketViewModel>> GetUserPacketsAsync(HttpContext context, long userId, string userspaceId)
         {
+            var client = _httpMessageHandler is not null ? new HttpClient(_httpMessageHandler) : _httpClientFactory.CreateClient();
+
             var token = string.Empty;
             if (_options?.GetAccessToken != null)
                 token = await _options.GetAccessToken(context);
-
-            var client = _httpMessageHandler is not null ? new HttpClient(_httpMessageHandler) : _httpClientFactory.CreateClient();
 
             if (!string.IsNullOrEmpty(token))
                 client.SetBearerToken(token);
