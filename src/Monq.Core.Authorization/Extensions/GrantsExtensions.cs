@@ -2,6 +2,7 @@
 using Monq.Core.Authorization.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 
 namespace Microsoft.AspNetCore.Authorization
@@ -11,6 +12,9 @@ namespace Microsoft.AspNetCore.Authorization
     /// </summary>
     public static class GrantsExtensions
     {
+        const string ObjectType = "objectType";
+        const string ObjectId = "objectId";
+
         /// <summary>
         /// Реализация методов расширения пользовательских прав.
         /// </summary>
@@ -193,5 +197,19 @@ namespace Microsoft.AspNetCore.Authorization
         /// <returns>Идентификатор пользовательского пространства или 0, если неопределим.</returns>
         public static long Userspace(this HttpRequest request)
             => Implementation.Userspace(request);
+
+        /// <summary>
+        /// Generate a unique key for the service user.
+        /// </summary>
+        /// <param name="user">User.</param>
+        /// <returns>Object key for service user or null.</returns>
+        public static string? ObjectKey(this ClaimsPrincipal user)
+        {
+            var objectTypeClaim = user.Claims.FirstOrDefault(x => x.Type == ObjectType);
+            var objectIdClaim = user.Claims.FirstOrDefault(x => x.Type == ObjectId);
+
+            if (objectTypeClaim == null || objectIdClaim == null) return null;
+            return $"{objectTypeClaim.Value}:{objectIdClaim.Value}";
+        }
     }
 }

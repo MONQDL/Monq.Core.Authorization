@@ -98,7 +98,7 @@ namespace Monq.Core.Authorization.Tests
 
             var packetToSet = TestData.CreatePacket(packetId, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
             var claim = TestData.CreateUserClaimPrincipal(userId);
             var packets = claim.Packets(userspaceId);
@@ -130,7 +130,7 @@ namespace Monq.Core.Authorization.Tests
 
             var packetToSet = TestData.CreatePacket(packetId, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
             var incorrentClaim = TestData.CreateUserClaimPrincipal(subjectId);
 
             var incorrentGrants = incorrentClaim.Packets(userspaceId);
@@ -152,7 +152,7 @@ namespace Monq.Core.Authorization.Tests
 
             var packetToSet = TestData.CreatePacket(packetId, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
             var hasGrant = claim.HasGrant(userspaceId, workGroupId, packetToSet.Grants.First());
@@ -172,7 +172,7 @@ namespace Monq.Core.Authorization.Tests
 
             var packetToSet = TestData.CreatePacket(packetId, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
             var hasGrant = claim.HasGrant(userspaceId, workGroupId, string.Empty);
@@ -192,7 +192,7 @@ namespace Monq.Core.Authorization.Tests
 
             var packetToSet = TestData.CreatePacket(packetId, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
             var grantName = sporadic.GetRandomModuleName();
@@ -214,7 +214,7 @@ namespace Monq.Core.Authorization.Tests
 
             var packetToSet = TestData.CreatePacket(packetId, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
             var hasGrant = claim.HasGrant(userspaceId, falseWorkGroupId, Modules.GrantType.BaseSystemWorkGroupRolesRead);
@@ -234,7 +234,7 @@ namespace Monq.Core.Authorization.Tests
             var userspaceId = sporadic.GetId();
 
             var packetToSet = TestData.CreatePacket(packetId, userspaceId, workGroupId, userId);
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
             var claim = TestData.CreateSystemUserClaimPrincipal();
 
@@ -259,7 +259,7 @@ namespace Monq.Core.Authorization.Tests
             var packetToSet = TestData.CreatePacketWithUserEntitiesGrant(
                 packetId, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
             var hasGrant = claim.HasGrant(userspaceId, falseWorkGroupId, Modules.GrantType.AdminsUserEntitiesWrite);
             Assert.True(hasGrant);
@@ -282,7 +282,7 @@ namespace Monq.Core.Authorization.Tests
             var packetToSet = TestData.CreatePacketWithUserEntitiesGrant(
                 packetId, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
             var hasAnyGrant = claim.HasAnyGrant(userspaceId, falseWorkGroupId, new List<string>{
                 Modules.GrantType.AdminsUserEntitiesWrite, Modules.GrantType.WorkGroupDeliveriesRead});
@@ -305,7 +305,7 @@ namespace Monq.Core.Authorization.Tests
             var packetToSet = TestData.CreatePacketWithUserEntitiesGrant(
                 packetId, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
             var hasGrant = claim.HasUserspaceAdminPanelGrant(userspaceId, Modules.GrantType.AdminsUserEntitiesWrite);
             Assert.True(hasGrant);
@@ -327,7 +327,7 @@ namespace Monq.Core.Authorization.Tests
             var packetToSet = TestData.CreatePacketWithUserEntitiesGrant(
                 packetId, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
             var hasAnyGrant = claim.HasAnyUserspaceAdminPanelGrant(userspaceId, new List<string>{
                 Modules.GrantType.AdminsUserEntitiesWrite, Modules.GrantType.WorkGroupDeliveriesRead});
@@ -351,7 +351,7 @@ namespace Monq.Core.Authorization.Tests
             var packetToSet = TestData.CreatePacketWithRandomGrant(sporadic,
                 packetId, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
             var hasGrant = claim.HasGrant(userspaceId, falseWorkGroupId, Modules.GrantType.AdminsUserEntitiesWrite);
             Assert.False(hasGrant);
@@ -374,7 +374,7 @@ namespace Monq.Core.Authorization.Tests
             var packetToSet = TestData.CreatePacketWithRandomGrant(sporadic,
                 packetId, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
             var hasAnyGrant = claim.HasAnyGrant(userspaceId, falseWorkGroupId, new List<string>{
                 Modules.GrantType.AdminsUserEntitiesWrite, Modules.GrantType.WorkGroupDeliveriesRead});
@@ -397,7 +397,7 @@ namespace Monq.Core.Authorization.Tests
             var packetToSet = TestData.CreatePacketWithGrant(
                 packetId, userspaceId, workGroupId, userId, Modules.GrantType.WorkGroupDeliveriesRead);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
             var hasGrant = claim.HasUserspaceAdminPanelGrant(userspaceId, Modules.GrantType.AdminsUserEntitiesWrite);
             Assert.False(hasGrant);
@@ -419,7 +419,7 @@ namespace Monq.Core.Authorization.Tests
             var packetToSet = TestData.CreatePacketWithGrant(
                 packetId, userspaceId, workGroupId, userId, Modules.GrantType.WorkGroupDeliveriesRead);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
             var hasAnyGrant = claim.HasAnyUserspaceAdminPanelGrant(userspaceId, new List<string>{
                 Modules.GrantType.AdminsUserEntitiesWrite, Modules.GrantType.WorkGroupDeliveriesRead});
@@ -439,12 +439,12 @@ namespace Monq.Core.Authorization.Tests
             var userspaceId = sporadic.GetId();
 
             var packetToSet = TestData.CreatePacket(packetId, userspaceId, workGroupId, userId);
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
             var requestUserId = sporadic.GetId();
 
             var adminPacket = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, requestUserId);
-            PacketRepository.Set(requestUserId, userspaceId.ToString(), new[] { adminPacket });
+            PacketRepository.Set(requestUserId, userspaceId.ToString(), key: null, new[] { adminPacket });
 
             var claim = TestData.CreateUserClaimPrincipal(requestUserId);
 
@@ -468,7 +468,7 @@ namespace Monq.Core.Authorization.Tests
 
             var packetToSet = TestData.CreatePacketWithRandomGrant(sporadic, packetId1, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
             var additionalPacketToRequest = TestData.CreatePacketWithRandomGrant(sporadic, packetId2, userspaceId, workGroupId, userId);
@@ -490,7 +490,7 @@ namespace Monq.Core.Authorization.Tests
             var grantNameToRequest = sporadic.GetRandomGrantName();
 
             var packetToSet = TestData.CreatePacketWithRandomGrant(sporadic, sporadic.GetId(), userspaceId, workGroupId, userId);
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
             var hasAnyGrant = claim.HasAnyGrant(userspaceId, workGroupId, new[] { grantNameToRequest });
             Assert.False(hasAnyGrant);
@@ -526,12 +526,12 @@ namespace Monq.Core.Authorization.Tests
             var userspaceId = sporadic.GetId();
 
             var packetToSet = TestData.CreatePacket(packetId, userspaceId, workGroupId, userId);
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
             var requestUserId = sporadic.GetId();
 
             var adminPacket = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, requestUserId);
-            PacketRepository.Set(requestUserId, userspaceId.ToString(), new[] { adminPacket });
+            PacketRepository.Set(requestUserId, userspaceId.ToString(), key: null, new[] { adminPacket });
 
             var claim = TestData.CreateUserClaimPrincipal(requestUserId);
             var grantToRequest = TestData.CreatePacketWithRandomGrant(sporadic, packetId, userspaceId, falseWorkGroupId, userId);
@@ -557,7 +557,7 @@ namespace Monq.Core.Authorization.Tests
             var packetToSet2 = TestData.CreatePacketWithRandomGrant(sporadic, packetId2, userspaceId, workGroupId, userId);
             var packetsToSet = new[] { packetToSet1, packetToSet2 };
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetsToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetsToSet);
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
             var hasAllGrants = claim.HasAllGrants(userspaceId, workGroupId, new[] { packetToSet1.Grants.First(), packetToSet2.Grants.First() });
@@ -578,7 +578,7 @@ namespace Monq.Core.Authorization.Tests
 
             var packetToSet = TestData.CreatePacketWithRandomGrant(sporadic, packetId1, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
             var additionalGrantToRequest = TestData.CreatePacketWithRandomGrant(sporadic, packetId2, userspaceId, workGroupId, userId);
@@ -601,7 +601,7 @@ namespace Monq.Core.Authorization.Tests
 
             var packetToSet = TestData.CreatePacketWithRandomGrant(sporadic, packetId1, userspaceId, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
             var additionalGrantToRequest = TestData.CreatePacketWithRandomGrant(sporadic, packetId2, userspaceId, workGroupId, userId);
@@ -618,7 +618,7 @@ namespace Monq.Core.Authorization.Tests
             var packetId = sporadic.GetId();
             var userId = sporadic.GetId();
             var userspaceId = sporadic.GetId();
-            PacketRepository.Set(userId, userspaceId.ToString(), Array.Empty<PacketViewModel>());
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, Array.Empty<PacketViewModel>());
             var workGroupId = sporadic.GetId();
 
             var claim = TestData.CreateSystemUserClaimPrincipal();
@@ -640,12 +640,12 @@ namespace Monq.Core.Authorization.Tests
             var userspaceId = sporadic.GetId();
 
             var packetToSet = TestData.CreatePacket(packetId, userspaceId, workGroupId, userId);
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
             var requestUserId = sporadic.GetId();
 
             var adminPacket = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, requestUserId);
-            PacketRepository.Set(requestUserId, userspaceId.ToString(), new[] { adminPacket });
+            PacketRepository.Set(requestUserId, userspaceId.ToString(), key: null, new[] { adminPacket });
 
             var claim = TestData.CreateUserClaimPrincipal(requestUserId);
             var grantToRequest = TestData.CreatePacketWithRandomGrant(sporadic, packetId, userspaceId, falseWorkGroupId, userId);
@@ -663,12 +663,12 @@ namespace Monq.Core.Authorization.Tests
         {
             var sporadic = new Random(seed);
             var userId = sporadic.GetId();
-            PacketRepository.Set(userId, null, Array.Empty<PacketViewModel>());
+            PacketRepository.Set(userId, null, key: null, Array.Empty<PacketViewModel>());
             var workGroupId = sporadic.GetId();
             var userspaceId = sporadic.GetId();
 
             var packetToSet = TestData.CreatePacketWithUserEntitiesGrant(_userspaceAdminPacketId, userspaceId, workGroupId, userId);
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
@@ -685,12 +685,12 @@ namespace Monq.Core.Authorization.Tests
         {
             var sporadic = new Random(seed);
             var userId = sporadic.GetId();
-            PacketRepository.Set(userId, null, Array.Empty<PacketViewModel>());
+            PacketRepository.Set(userId, null, key: null, Array.Empty<PacketViewModel>());
             var workGroupId = sporadic.GetId();
             var userspaceId = sporadic.GetId();
 
             var packetToSet = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, userId);
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
@@ -706,13 +706,13 @@ namespace Monq.Core.Authorization.Tests
             var sporadic = new Random(seed);
             var packetId = sporadic.GetId();
             var userId = sporadic.GetId();
-            PacketRepository.Set(userId, null, Array.Empty<PacketViewModel>());
+            PacketRepository.Set(userId, null, key: null, Array.Empty<PacketViewModel>());
             var workGroupId = sporadic.GetId();
             var userspaceId = sporadic.GetId();
 
             var packetToSet = TestData.CreatePacketWithRandomGrant(sporadic, packetId, 10, workGroupId, userId);
 
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
             var isUserspaceAdmin = claim.IsUserspaceAdmin(userspaceId);
@@ -787,12 +787,12 @@ namespace Monq.Core.Authorization.Tests
         {
             var sporadic = new Random(seed);
             var userId = sporadic.GetId();
-            PacketRepository.Set(userId, null, Array.Empty<PacketViewModel>());
+            PacketRepository.Set(userId, null, key: null, Array.Empty<PacketViewModel>());
             var workGroupId = sporadic.GetId();
             var userspaceId = sporadic.GetId();
 
             var packetToSet = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, userId);
-            PacketRepository.Set(userId, userspaceId.ToString(), packetToSet);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
             var claim = TestData.CreateUserClaimPrincipal(userId);
 
@@ -825,7 +825,7 @@ namespace Monq.Core.Authorization.Tests
             var userId = sporadic.GetId();
             var testUserspaceId = sporadic.GetId();
             var invalidUserspaceId = sporadic.GetId();
-            PacketRepository.Set(userId, testUserspaceId.ToString(), Array.Empty<PacketViewModel>());
+            PacketRepository.Set(userId, testUserspaceId.ToString(), key: null, Array.Empty<PacketViewModel>());
             var claim = TestData.CreateUserClaimPrincipal(userId);
             var count = sporadic.Next(7, 64);
             const double probability = .25;
@@ -871,7 +871,7 @@ namespace Monq.Core.Authorization.Tests
             var userId = sporadic.GetId();
             var testUserspaceId = sporadic.GetId();
             var invalidUserspaceId = sporadic.GetId();
-            PacketRepository.Set(userId, testUserspaceId.ToString(), Array.Empty<PacketViewModel>());
+            PacketRepository.Set(userId, testUserspaceId.ToString(), key: null, Array.Empty<PacketViewModel>());
             var claim = TestData.CreateUserClaimPrincipal(userId);
             var count = sporadic.Next(16, 64);
             const double probability = .25;
@@ -912,7 +912,7 @@ namespace Monq.Core.Authorization.Tests
             var userId = sporadic.GetId();
             var testUserspaceId = sporadic.GetId();
             var invalidUserspaceId = sporadic.GetId();
-            PacketRepository.Set(userId, testUserspaceId.ToString(), Array.Empty<PacketViewModel>());
+            PacketRepository.Set(userId, testUserspaceId.ToString(), key: null, Array.Empty<PacketViewModel>());
             var claim = TestData.CreateUserClaimPrincipal(userId);
             var count = sporadic.Next(16, 64);
             const double probability = .25;
@@ -953,7 +953,7 @@ namespace Monq.Core.Authorization.Tests
             var userId = sporadic.GetId();
             var testUserspaceId = sporadic.GetId();
             var invalidUserspaceId = sporadic.GetId();
-            PacketRepository.Set(userId, testUserspaceId.ToString(), Array.Empty<PacketViewModel>());
+            PacketRepository.Set(userId, testUserspaceId.ToString(), key: null, Array.Empty<PacketViewModel>());
             var claim = TestData.CreateUserClaimPrincipal(userId);
             var packet1 = TestData.CreatePacketWithRandomGrant(sporadic, 0, testUserspaceId, 0, userId);
             var packet2 = TestData.CreatePacketWithRandomGrant(sporadic, 0, testUserspaceId, 0, userId);
@@ -1010,7 +1010,7 @@ namespace Monq.Core.Authorization.Tests
             var userId = sporadic.GetId();
             var testUserspaceId = sporadic.GetId();
             var invalidUserspaceId = sporadic.GetId();
-            PacketRepository.Set(userId, testUserspaceId.ToString(), Array.Empty<PacketViewModel>());
+            PacketRepository.Set(userId, testUserspaceId.ToString(), key: null, Array.Empty<PacketViewModel>());
             var claim = TestData.CreateUserClaimPrincipal(userId);
             var packet1 = TestData.CreatePacketWithRandomGrant(sporadic, 0, testUserspaceId, 0, userId);
             var packet2 = TestData.CreatePacketWithRandomGrant(sporadic, 0, testUserspaceId, 0, userId);
@@ -1064,7 +1064,7 @@ namespace Monq.Core.Authorization.Tests
             var sporadic = new Random(seed);
             var userId = sporadic.GetId();
             var testUserspaceId = 10;
-            PacketRepository.Set(userId, null, Array.Empty<PacketViewModel>());
+            PacketRepository.Set(userId, null, key: null, Array.Empty<PacketViewModel>());
             var claim = TestData.CreateUserClaimPrincipal(userId);
             var count = sporadic.Next(4, 16);
             var workGroups = new List<long>();
@@ -1143,9 +1143,9 @@ namespace Monq.Core.Authorization.Tests
 
         void AddPacketsToRepository(long userId, IEnumerable<PacketViewModel> packets, long userspaceId)
         {
-            var existingPackets = PacketRepository.Get(userId, userspaceId.ToString());
+            var existingPackets = PacketRepository.Get(userId, userspaceId.ToString(), key: null);
             existingPackets = existingPackets.Union(packets);
-            PacketRepository.Set(userId, userspaceId.ToString(), existingPackets);
+            PacketRepository.Set(userId, userspaceId.ToString(), key: null, existingPackets);
         }
 
         PacketViewModel GetRoboMutantPacketClone(long id, long workGroupId, PacketViewModel packet)
