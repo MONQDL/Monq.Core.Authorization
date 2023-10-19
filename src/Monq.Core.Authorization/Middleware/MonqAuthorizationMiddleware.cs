@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -35,8 +36,7 @@ namespace Monq.Core.Authorization.Middleware
 
         readonly string _userGrantsApiUri;
         readonly TimeSpan _connectionTimeout = TimeSpan.FromSeconds(30);
-        readonly TimeSpan _cacheTimeout = TimeSpan.FromSeconds(3);
-        readonly MonqAuthorizationOptions? _options;
+        readonly MonqAuthorizationOptions _options;
         readonly Stopwatch _sw = new Stopwatch();
 
         static IEnumerable<string> _forwardedHeaders { get; }
@@ -61,7 +61,7 @@ namespace Monq.Core.Authorization.Middleware
             HttpMessageHandler? httpMessageHandler = null)
         {
             _httpClientFactory = httpClientFactory;
-            _options = options;
+            _options = options ?? new();
             _next = next;
             _userGrantsApiUri = configuration[_servicesBaseUri];
             _logger = loggerFactory.CreateLogger<MonqAuthorizationMiddleware>();
@@ -88,7 +88,7 @@ namespace Monq.Core.Authorization.Middleware
             HttpMessageHandler? httpMessageHandler = null)
         {
             _httpClientFactory = httpClientFactory;
-            _options = options;
+            _options = options ?? new();
             _next = next;
             _userGrantsApiUri = configuration[_servicesBaseUri];
             _logger = logger;
@@ -134,7 +134,7 @@ namespace Monq.Core.Authorization.Middleware
         async ValueTask UpdateGrantsAsync(HttpContext context)
         {
             var userspaceId = string.Empty;
-            if (_options?.GetUserspaceId != null)
+            if (_options.GetUserspaceId != null)
                 userspaceId = await _options.GetUserspaceId(context);
 
             var user = context.User;
@@ -143,7 +143,7 @@ namespace Monq.Core.Authorization.Middleware
             if (PacketRepository.NotExistsOrExpired(userId, userspaceId, key))
             {
                 var userGrants = await GetUserPacketsAsync(context, userId, userspaceId);
-                PacketRepository.Set(userId, userspaceId, key, userGrants, _cacheTimeout);
+                PacketRepository.Set(userId, userspaceId, key, userGrants, _options.UseCache ? _options.CacheTime : null);
             }
         }
 
@@ -158,7 +158,7 @@ namespace Monq.Core.Authorization.Middleware
             var client = _httpMessageHandler is not null ? new HttpClient(_httpMessageHandler) : _httpClientFactory.CreateClient();
 
             var token = string.Empty;
-            if (_options?.GetAccessToken != null)
+            if (_options.GetAccessToken != null)
                 token = await _options.GetAccessToken(context);
 
             if (!string.IsNullOrEmpty(token))
@@ -181,11 +181,10 @@ namespace Monq.Core.Authorization.Middleware
             try
             {
                 var response = await client
-                    .GetStringAsync(new Uri(
+                    .GetFromJsonAsync<IEnumerable<PacketViewModel>>(new Uri(
                         new Uri(_userGrantsApiUri),
-                        $"/api/pl/user-grants/users/{userId}/packets"));
-                return JsonSerializer.Deserialize<IEnumerable<PacketViewModel>>(response, _jsonSerializationOptions)
-                    ?? Array.Empty<PacketViewModel>();
+                        $"/api/pl/user-grants/users/{userId}/packets"), _jsonSerializationOptions);
+                return response ?? Array.Empty<PacketViewModel>();
             }
             catch (HttpRequestException e)
             {
