@@ -24,7 +24,7 @@ namespace Monq.Core.Authorization.Helpers
         /// <param name="key">Object key.</param>
         /// <returns>Collection of user packets <see cref="IEnumerable{PacketViewModel}"/>.</returns>
         public static IEnumerable<PacketViewModel> Get(long userId, string? userspaceId, string? key)
-            => _packets.TryGetValue(new CachedUser { UserId = userId, UserspaceId = userspaceId, Key = key}, out var cachedItem) ? cachedItem.Packets : Array.Empty<PacketViewModel>();
+            => _packets.TryGetValue(new CachedUser { UserId = userId, UserspaceId = userspaceId, Key = key }, out var cachedItem) ? cachedItem.Packets : Array.Empty<PacketViewModel>();
 
         /// <summary>
         /// Check the userId grants for the expiration.
@@ -49,7 +49,7 @@ namespace Monq.Core.Authorization.Helpers
         /// <param name="grant">User's grant <see cref="PacketViewModel"/>.</param>
         /// <param name="cacheTimeout">If set, the packet will be cached for <paramref name="cacheTimeout"/>.</param>
         public static void Set(long userId, string? userspaceId, string? key, PacketViewModel grant, TimeSpan? cacheTimeout = default)
-            => _packets[new CachedUser { UserId = userId, UserspaceId = userspaceId, Key = key}] = new CachedPacket { Packets = new[] { grant }, AddedAt = DateTimeOffset.UtcNow, CacheTimeout = cacheTimeout };
+            => _packets[new CachedUser { UserId = userId, UserspaceId = userspaceId, Key = key }] = new CachedPacket { Packets = new[] { grant }, AddedAt = DateTimeOffset.UtcNow, CacheTimeout = cacheTimeout };
 
         /// <summary>
         /// Установить соответствие пользователя с пакетом прав.

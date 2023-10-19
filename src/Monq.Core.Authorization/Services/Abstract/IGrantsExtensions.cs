@@ -61,6 +61,15 @@ namespace Microsoft.AspNetCore.Authorization
         bool HasAllGrants(ClaimsPrincipal user, long userspaceId, long workGroupId, IEnumerable<string> grantNames);
 
         /// <summary>
+        /// Проверить, является ли пользователь менеджером рабочей группы.
+        /// </summary>
+        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
+        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
+        /// <param name="workGroupId">Идентификатор рабочей группы, в которой проверяется наличие прав.</param>
+        /// <returns>Истина, если пользователь является менеджером выбранной рабочей группы.</returns>
+        bool IsWorkGroupManager(ClaimsPrincipal user, long userspaceId, long workGroupId);
+
+        /// <summary>
         /// Проверить, является ли пользователь с данным идентификатором <paramref name="userspaceId"/>
         /// из <see cref="ClaimsPrincipal"/> администратором пользовательского пространства 
         /// или обладает правом доступа к пользовательским сущностям.
@@ -68,7 +77,6 @@ namespace Microsoft.AspNetCore.Authorization
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
         /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства или обладает правом доступа к пользовательским сущностям.</returns>
-        [Obsolete("Использовать HasUsersEntitiesGrant.")]
         bool IsUserspaceAdmin(ClaimsPrincipal user, long userspaceId);
 
         /// <summary>
@@ -84,7 +92,7 @@ namespace Microsoft.AspNetCore.Authorization
         /// <summary>
         /// Проверить есть ли у пользователя
         /// с данным идентификатором <paramref name="userspaceId"/>
-        /// парво из админ. панели.
+        /// право из админ. панели.
         /// </summary>
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
@@ -116,7 +124,7 @@ namespace Microsoft.AspNetCore.Authorization
         /// </summary>
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-        /// <returns>Истина, если пользователь -- cистемный или администратор заданного пользовательского пространства.</returns>
+        /// <returns>Истина, если пользователь -- системный или администратор заданного пользовательского пространства.</returns>
         bool IsSuperUser(ClaimsPrincipal user, long userspaceId);
 
         /// <summary>

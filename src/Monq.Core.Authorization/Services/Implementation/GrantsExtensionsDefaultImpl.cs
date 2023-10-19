@@ -52,7 +52,7 @@ namespace Microsoft.AspNetCore.Authorization
         {
             if (user is null)
                 return Array.Empty<PacketViewModel>();
-            
+
             var userId = user.Subject();
             if (userId <= 0)
                 return Array.Empty<PacketViewModel>();
@@ -92,7 +92,7 @@ namespace Microsoft.AspNetCore.Authorization
 
             var packets = user.Packets(userspaceId);
 
-            //Проверка прав админ. панели.
+            // Проверка прав админ. панели.
             var adminPanelGrants = grantNames.Where(x => x.Contains(Modules.GrantType.AdminsGrantSuffix, StringComparison.Ordinal));
             if (adminPanelGrants?.Any() == true)
             {
@@ -110,15 +110,7 @@ namespace Microsoft.AspNetCore.Authorization
             return userHasAnyGrant;
         }
 
-        /// <summary>
-        /// Проверить, есть ли все заданные права у пользователя из <see cref="ClaimsPrincipal"/>.
-        /// Всегда безусловно возвращает <c>true</c> для системного пользователя и администратора пространства.
-        /// </summary>
-        /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-        /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-        /// <param name="workGroupId">Идентификатор рабочей группы, в которой проверяется наличие прав.</param>
-        /// <param name="grantNames">Строковые представления прав (например, "base-system.rsm.read").</param>
-        /// <returns>Истина, если все заданные права есть у пользователя запроса.</returns>
+        /// <inheritdoc />
         public bool HasAllGrants(ClaimsPrincipal? user, long userspaceId, long workGroupId, IEnumerable<string> grantNames)
         {
             if (IsSuperUser(user, userspaceId))
@@ -159,7 +151,20 @@ namespace Microsoft.AspNetCore.Authorization
         }
 
         /// <inheritdoc />
-        [Obsolete("Использовать HasUsersEntitiesGrant")]
+        public bool IsWorkGroupManager(ClaimsPrincipal user, long userspaceId, long workGroupId)
+        {
+            var packets = user.Packets(userspaceId);
+            if (!packets.Any())
+                return false;
+
+            // Фильтруем по наличию у пользователя системного пакета WorkgroupManager.
+            return packets
+                .Any(val => val.Owners
+                    .Any(owner => owner.WorkGroupId == workGroupId && owner.UserspaceId == userspaceId) 
+                    && val.PacketType == PacketTypes.WorkgroupManager);
+        }
+
+        /// <inheritdoc />
         public bool IsUserspaceAdmin(ClaimsPrincipal? user, long userspaceId)
             => HasUsersEntitiesGrant(user, userspaceId);
 
@@ -216,7 +221,7 @@ namespace Microsoft.AspNetCore.Authorization
         /// </summary>
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-        /// <returns>Истина, если пользователь -- cистемный или администратор заданного пользовательского пространства.</returns>
+        /// <returns>Истина, если пользователь -- системный или администратор заданного пользовательского пространства.</returns>
         public bool IsSuperUser(ClaimsPrincipal? user, long userspaceId)
             => IsSystemUser(user) || IsUserspaceAdmin(user, userspaceId);
 
