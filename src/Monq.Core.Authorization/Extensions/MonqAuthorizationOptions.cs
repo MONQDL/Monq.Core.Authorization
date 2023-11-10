@@ -9,12 +9,12 @@ namespace Monq.Core.Authorization.Extensions
         /// <summary>
         /// Делегат вызывается каждый раз при попытке получить Access token.
         /// </summary>
-        public Func<HttpContext, Task<string>>? GetAccessToken { get; set; }
+        public Func<HttpContext, Task<string>>? GetAccessToken { get; set; } = HttpContextExtensions.GetToken;
 
         /// <summary>
         /// Делегат для извлечения идентификатора пользовательского пространства из HTTP контекста.
         /// </summary>
-        public Func<HttpContext, Task<string>>? GetUserspaceId { get; set; }
+        public Func<HttpContext, Task<string>>? GetUserspaceId { get; set; } = HttpContextExtensions.GetUserspaceId;
 
         /// <summary>
         /// Если <c>true</c>, то список прав пользователя будет кэширован на <see cref="CacheTime"/>.
