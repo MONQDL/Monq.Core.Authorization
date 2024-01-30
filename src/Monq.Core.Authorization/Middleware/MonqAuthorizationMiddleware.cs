@@ -12,6 +12,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Monq.Core.Authorization.Middleware
@@ -41,6 +42,11 @@ namespace Monq.Core.Authorization.Middleware
 
         static IEnumerable<string> _forwardedHeaders { get; }
             = new[] { "x-trace-event-id", "x-smon-userspace-id" };
+
+        static MonqAuthorizationMiddleware()
+        {
+            _jsonSerializationOptions.Converters.Add(new JsonStringEnumConverter());
+        }
 
         /// <summary>
         /// Конструктор middleware (промежуточного слоя) для обеспечения авторизации действий пользователя.
