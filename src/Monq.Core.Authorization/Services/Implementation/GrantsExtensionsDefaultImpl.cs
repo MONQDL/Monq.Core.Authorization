@@ -161,7 +161,7 @@ namespace Microsoft.AspNetCore.Authorization
             return packets
                 .Any(val => val.Owners
                     .Any(owner => owner.WorkGroupId == workGroupId && owner.UserspaceId == userspaceId) 
-                    && val.PacketType == PacketTypes.Manager);
+                    && val.Type == PacketTypes.Manager);
         }
 
         /// <inheritdoc />
