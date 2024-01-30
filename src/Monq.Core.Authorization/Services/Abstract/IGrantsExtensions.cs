@@ -77,6 +77,9 @@ namespace Microsoft.AspNetCore.Authorization
         /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
         /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
         /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства или обладает правом доступа к пользовательским сущностям.</returns>
+        [Obsolete("Расширение потеряло изначально задуманный смысл. " +
+            "Для того, чтобы проверить, что пользователь входит с список администраторов пространства," +
+            "используйте метод IsAdministrator()")]
         bool IsUserspaceAdmin(ClaimsPrincipal user, long userspaceId);
 
         /// <summary>
