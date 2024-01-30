@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Monq.Core.Authorization.Models" Version="5.1.0-rev-7582789945" />
+    <PackageReference Include="Monq.Core.Authorization.Models" Version="5.1.0-rev-7712523159" />
   </ItemGroup>
 
 </Project>
