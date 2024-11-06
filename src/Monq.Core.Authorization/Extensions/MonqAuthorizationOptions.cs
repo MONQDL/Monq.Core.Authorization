@@ -2,28 +2,27 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Monq.Core.Authorization.Extensions
+namespace Monq.Core.Authorization.Extensions;
+
+public sealed class MonqAuthorizationOptions
 {
-    public sealed class MonqAuthorizationOptions
-    {
-        /// <summary>
-        /// Делегат вызывается каждый раз при попытке получить Access token.
-        /// </summary>
-        public Func<HttpContext, Task<string>>? GetAccessToken { get; set; } = HttpContextExtensions.GetToken;
+    /// <summary>
+    /// Делегат вызывается каждый раз при попытке получить Access token.
+    /// </summary>
+    public Func<HttpContext, Task<string>>? GetAccessToken { get; set; } = HttpContextExtensions.GetToken;
 
-        /// <summary>
-        /// Делегат для извлечения идентификатора пользовательского пространства из HTTP контекста.
-        /// </summary>
-        public Func<HttpContext, Task<string>>? GetUserspaceId { get; set; } = HttpContextExtensions.GetUserspaceId;
+    /// <summary>
+    /// Делегат для извлечения идентификатора пользовательского пространства из HTTP контекста.
+    /// </summary>
+    public Func<HttpContext, Task<string>>? GetUserspaceId { get; set; } = HttpContextExtensions.GetUserspaceId;
 
-        /// <summary>
-        /// Если <c>true</c>, то список прав пользователя будет кэширован на <see cref="CacheTime"/>.
-        /// </summary>
-        public bool UseCache { get; set; } = true;
+    /// <summary>
+    /// Если <c>true</c>, то список прав пользователя будет кэширован на <see cref="CacheTime"/>.
+    /// </summary>
+    public bool UseCache { get; set; } = true;
 
-        /// <summary>
-        /// Длительность кэширования прав пользователя, если <see cref="UseCache"/> = <c>true</c>. По умолчанию - 3 сек.
-        /// </summary>
-        public TimeSpan CacheTime { get; set; } = TimeSpan.FromSeconds(3);
-    }
+    /// <summary>
+    /// Длительность кэширования прав пользователя, если <see cref="UseCache"/> = <c>true</c>. По умолчанию - 3 сек.
+    /// </summary>
+    public TimeSpan CacheTime { get; set; } = TimeSpan.FromSeconds(3);
 }
