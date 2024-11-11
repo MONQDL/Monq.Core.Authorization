@@ -1,23 +1,22 @@
-﻿namespace Monq.Core.Authorization.SampleApi.Configuration
+﻿namespace Monq.Core.Authorization.SampleApi.Configuration;
+
+public static class AuthConstants
 {
-    public static class AuthConstants
+    internal static class AuthenticationConfiguration
     {
-        internal static class AuthenticationConfiguration
-        {
-            public const string Authority = "AuthenticationEndpoint";
-            public const string ScopeName = "ApiResource:Login";
-            public const string ScopeSecret = "ApiResource:Password";
+        public const string Authority = "AuthenticationEndpoint";
+        public const string ScopeName = "ApiResource:Login";
+        public const string ScopeSecret = "ApiResource:Password";
 
-            public const string RequireHttpsMetadata = "RequireHttpsMetadata";
-            public const string EnableCaching = "EnableCaching";
-        }
+        public const string RequireHttpsMetadata = "RequireHttpsMetadata";
+        public const string EnableCaching = "EnableCaching";
+    }
 
-        public static class AuthorizationScopes
-        {
-            public const string Read = "read";
-            public const string Write = "write";
-            public const string SmonAdmin = "smon-admin";
-            public const string CloudAdmin = "cloud-admin";
-        }
+    public static class AuthorizationScopes
+    {
+        public const string Read = "read";
+        public const string Write = "write";
+        public const string SmonAdmin = "smon-admin";
+        public const string CloudAdmin = "cloud-admin";
     }
 }

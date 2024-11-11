@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>4.9.2</Version>
+    <Version>5.0.0</Version>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Version Condition=" '$(VersionSuffix)' != '' ">$(Version)-$(VersionSuffix)</Version>
     <IsPackable>true</IsPackable>
-    <TargetFrameworks>net5.0;net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
     <Authors>Dmitry Fokin</Authors>
     <Company>MONQ Digital lab</Company>
     <Title>Monq.Core.Authorization</Title>
@@ -21,12 +21,14 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <NoWarn>IDE1006</NoWarn>
     <Nullable>enable</Nullable>
-    <LangVersion>9.0</LangVersion>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Monq.Core.Authorization.Models" Version="5.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Monq.Core.Authorization.Models" Version="5.2.0" />
   </ItemGroup>
 
 </Project>
