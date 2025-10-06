@@ -55,33 +55,6 @@ public class MonqAuthorizationMiddleware
     /// <param name="next">Функция обработки HTTP-запроса.</param>
     /// <param name="configuration">Конфигурация приложения <see cref="IConfiguration" />.</param>
     /// <param name="options">The options.</param>
-    /// <param name="loggerFactory">Фабрика конфигурирования инструментария логирования <see cref="ILogger" />.</param>
-    /// <param name="httpClientFactory">Http Client Factory.</param>
-    /// <param name="httpMessageHandler">Обработчик HTTP-запросов.</param>
-    public MonqAuthorizationMiddleware(
-        RequestDelegate next,
-        IConfiguration configuration,
-        MonqAuthorizationOptions? options,
-        ILoggerFactory loggerFactory,
-        IHttpClientFactory httpClientFactory,
-        HttpMessageHandler? httpMessageHandler = null)
-    {
-        _httpClientFactory = httpClientFactory;
-        _options = options ?? new();
-        _next = next;
-        _userGrantsApiUri = configuration[_servicesBaseUri];
-        _logger = loggerFactory.CreateLogger<MonqAuthorizationMiddleware>();
-
-        _httpMessageHandler = httpMessageHandler;
-    }
-
-    /// <summary>
-    /// Конструктор middleware (промежуточного слоя) для обеспечения авторизации действий пользователя.
-    /// Создаёт новый экземпляр <see cref="MonqAuthorizationMiddleware" />.
-    /// </summary>
-    /// <param name="next">Функция обработки HTTP-запроса.</param>
-    /// <param name="configuration">Конфигурация приложения <see cref="IConfiguration" />.</param>
-    /// <param name="options">The options.</param>
     /// <param name="logger">Инструментарий логирования <see cref="ILogger" />.</param>
     /// <param name="httpClientFactory">Http Client Factory.</param>
     /// <param name="httpMessageHandler">Обработчик HTTP-запросов.</param>
