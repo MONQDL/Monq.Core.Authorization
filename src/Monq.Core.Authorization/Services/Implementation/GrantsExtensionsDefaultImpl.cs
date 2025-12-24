@@ -84,7 +84,7 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
     /// <returns>Истина, если хотя бы одно заданное право есть у пользователя запроса.</returns>
     public bool HasAnyGrant(ClaimsPrincipal? user, long userspaceId, long workGroupId, IEnumerable<string> grantNames)
     {
-        if (IsSuperUser(user, userspaceId))
+        if (IsSystemUser(user))
             return true;
 
         if (user is null || !grantNames.Any())
@@ -92,12 +92,14 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
 
         var packets = user.Packets(userspaceId);
 
+        // TODO: Похоже, что эту проверку нужно пересмотреть.
         // Проверка прав админ. панели.
         var adminPanelGrants = grantNames.Where(x => x.Contains(Modules.GrantType.AdminsGrantSuffix, StringComparison.Ordinal));
         if (adminPanelGrants?.Any() == true)
         {
             var hasAdminPanelPackets = HasAnyUserspaceAdminPanelGrant(user, userspaceId, adminPanelGrants);
-            if (hasAdminPanelPackets) return true;
+            if (hasAdminPanelPackets) 
+                return true;
         }
 
         if (!packets.Any())
@@ -113,22 +115,16 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
     /// <inheritdoc />
     public bool HasAllGrants(ClaimsPrincipal? user, long userspaceId, long workGroupId, IEnumerable<string> grantNames)
     {
-        if (IsSuperUser(user, userspaceId))
-        {
+        if (IsSystemUser(user))
             return true;
-        }
 
         if (user is null || !grantNames.Any())
-        {
             return false;
-        }
 
         var packets = user.Packets(userspaceId);
 
         if (!packets.Any())
-        {
             return false;
-        }
 
         // Получить идентификаторы пакетов пользователя, имеющих права.
         // к релевантной рабочей группе.
@@ -151,8 +147,11 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
     }
 
     /// <inheritdoc />
-    public bool IsWorkGroupManager(ClaimsPrincipal user, long userspaceId, long workGroupId)
+    public bool IsWorkGroupManager(ClaimsPrincipal? user, long userspaceId, long workGroupId)
     {
+        if (user is null)
+            return false;
+
         var packets = user.Packets(userspaceId);
         if (!packets.Any())
             return false;
@@ -163,13 +162,6 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
                 .Any(owner => owner.WorkGroupId == workGroupId && owner.UserspaceId == userspaceId)
                 && val.Type == PacketTypes.Manager);
     }
-
-    /// <inheritdoc />
-    public bool IsUserspaceAdmin(ClaimsPrincipal? user, long userspaceId)
-        => HasUsersEntitiesGrant(user, userspaceId);
-
-    public bool HasUsersEntitiesGrant(ClaimsPrincipal? user, long userspaceId)
-    => HasUserspaceAdminPanelGrant(user, userspaceId, Modules.GrantType.AdminsUserEntitiesWrite);
 
     /// <inheritdoc />
     public bool HasUserspaceAdminPanelGrant(ClaimsPrincipal? user, long userspaceId, string adminPanelGrant)
@@ -214,16 +206,6 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
 
         return string.Equals(userClientId, ClientIdValue, StringComparison.OrdinalIgnoreCase);
     }
-
-    /// <summary>
-    /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/> системным или
-    /// администратором пользовательского пространства с данным идентификатором <paramref name="userspaceId"/>.
-    /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <returns>Истина, если пользователь -- системный или администратор заданного пользовательского пространства.</returns>
-    public bool IsSuperUser(ClaimsPrincipal? user, long userspaceId)
-        => IsSystemUser(user) || IsUserspaceAdmin(user, userspaceId);
 
     /// <summary>
     /// Получить Id рабочих групп, в которых у пользователя из <see cref="ClaimsPrincipal"/>

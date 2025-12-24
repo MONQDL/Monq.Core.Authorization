@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,7 +33,7 @@ public static class HttpContextExtensions
     }
 
     /// <summary>
-    /// Get UserpaceId from the HttpContext request header.
+    /// Get UserspaceId from the HttpContext request header.
     /// </summary>
     /// <param name="context">The context.</param>
     public static Task<string> GetUserspaceId(this HttpContext context)
