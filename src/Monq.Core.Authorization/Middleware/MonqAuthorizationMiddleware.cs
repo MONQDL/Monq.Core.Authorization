@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Monq.Core.Authorization.Extensions;
 using Monq.Core.Authorization.Helpers;
+using Monq.Core.Authorization.JsonSerializerContexts;
 using Monq.Core.Authorization.Models;
 using System;
 using System.Collections.Generic;
@@ -24,12 +25,6 @@ public class MonqAuthorizationMiddleware
 {
     const string _servicesBaseUri = "BaseUri";
 
-    static readonly JsonSerializerOptions _jsonSerializationOptions = new JsonSerializerOptions
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
-    };
-
     readonly RequestDelegate _next;
     readonly ILogger<MonqAuthorizationMiddleware> _logger;
     readonly IHttpClientFactory _httpClientFactory;
@@ -42,11 +37,6 @@ public class MonqAuthorizationMiddleware
 
     static IEnumerable<string> _forwardedHeaders { get; }
         = new[] { "x-trace-event-id", "x-smon-userspace-id" };
-
-    static MonqAuthorizationMiddleware()
-    {
-        _jsonSerializationOptions.Converters.Add(new JsonStringEnumConverter());
-    }
 
     /// <summary>
     /// Конструктор middleware (промежуточного слоя) для обеспечения авторизации действий пользователя.
@@ -69,7 +59,8 @@ public class MonqAuthorizationMiddleware
         _httpClientFactory = httpClientFactory;
         _options = options ?? new();
         _next = next;
-        _userGrantsApiUri = configuration[_servicesBaseUri];
+        _userGrantsApiUri = configuration[_servicesBaseUri] 
+            ?? throw new Exception("Can't find 'BaseUri' in IConfiguration providers.");
         _logger = logger;
 
         _httpMessageHandler = httpMessageHandler;
@@ -162,7 +153,8 @@ public class MonqAuthorizationMiddleware
             var response = await client
                 .GetFromJsonAsync<IEnumerable<PacketViewModel>>(new Uri(
                     new Uri(_userGrantsApiUri),
-                    $"/api/pl/user-grants/users/{userId}/packets"), _jsonSerializationOptions);
+                    $"/api/pl/user-grants/users/{userId}/packets"),
+                    PacketViewModelSerializerContext.Default.IEnumerablePacketViewModel);
             return response ?? Array.Empty<PacketViewModel>();
         }
         catch (HttpRequestException e)

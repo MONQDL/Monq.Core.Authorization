@@ -1,4 +1,4 @@
-﻿using IdentityModel;
+using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
@@ -19,7 +19,7 @@ namespace Monq.Core.Authorization.Tests;
 [Collection("Serial")]
 public class GrantsExtensionsTests
 {
-    const sbyte _userspaceAdminPacketId = 1;
+    const sbyte UserspaceAdminPacketId = 1;
 
     [Fact(DisplayName = "GrantsExtensions: Subject(): Проверка возврата идентификатора системного пользователя при отсутствии user.")]
     public void ShouldProperlyReturnSystemUserIdForNullClaimPrincipal()
@@ -217,7 +217,7 @@ public class GrantsExtensionsTests
         PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
         var claim = TestData.CreateUserClaimPrincipal(userId);
 
-        var hasGrant = claim.HasGrant(userspaceId, falseWorkGroupId, Modules.GrantType.BaseSystemWorkGroupRolesRead);
+        var hasGrant = claim.HasGrant(userspaceId, falseWorkGroupId, TestData.BaseSystemWorkGroupRolesRead);
         Assert.False(hasGrant);
     }
 
@@ -238,7 +238,7 @@ public class GrantsExtensionsTests
 
         var claim = TestData.CreateSystemUserClaimPrincipal();
 
-        var hasGrant = claim.HasGrant(userspaceId, falseWorkGroupId, Modules.GrantType.BaseSystemWorkGroupRolesRead);
+        var hasGrant = claim.HasGrant(userspaceId, falseWorkGroupId, TestData.BaseSystemWorkGroupRolesRead);
         Assert.True(hasGrant);
     }
 
@@ -261,7 +261,7 @@ public class GrantsExtensionsTests
 
         PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
-        var hasGrant = claim.HasGrant(userspaceId, falseWorkGroupId, Modules.GrantType.AdminsUserEntitiesWrite);
+        var hasGrant = claim.HasGrant(userspaceId, falseWorkGroupId, TestData.AdminsUserEntitiesWrite);
         Assert.True(hasGrant);
     }
 
@@ -285,7 +285,7 @@ public class GrantsExtensionsTests
         PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
         var hasAnyGrant = claim.HasAnyGrant(userspaceId, falseWorkGroupId, new List<string>{
-            Modules.GrantType.AdminsUserEntitiesWrite, Modules.GrantType.WorkGroupDeliveriesRead});
+            TestData.AdminsUserEntitiesWrite, TestData.BaseSystemWorkGroupRolesRead});
         Assert.True(hasAnyGrant);
     }
 
@@ -307,7 +307,7 @@ public class GrantsExtensionsTests
 
         PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
-        var hasGrant = claim.HasUserspaceAdminPanelGrant(userspaceId, Modules.GrantType.AdminsUserEntitiesWrite);
+        var hasGrant = claim.HasUserspaceAdminPanelGrant(userspaceId, TestData.AdminsUserEntitiesWrite);
         Assert.True(hasGrant);
     }
 
@@ -330,7 +330,7 @@ public class GrantsExtensionsTests
         PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
         var hasAnyGrant = claim.HasAnyUserspaceAdminPanelGrant(userspaceId, new List<string>{
-            Modules.GrantType.AdminsUserEntitiesWrite, Modules.GrantType.WorkGroupDeliveriesRead});
+            TestData.AdminsUserEntitiesWrite, TestData.BaseSystemWorkGroupRolesRead});
         Assert.True(hasAnyGrant);
     }
 
@@ -353,7 +353,7 @@ public class GrantsExtensionsTests
 
         PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
-        var hasGrant = claim.HasGrant(userspaceId, falseWorkGroupId, Modules.GrantType.AdminsUserEntitiesWrite);
+        var hasGrant = claim.HasGrant(userspaceId, falseWorkGroupId, TestData.AdminsUserEntitiesWrite);
         Assert.False(hasGrant);
     }
 
@@ -377,7 +377,7 @@ public class GrantsExtensionsTests
         PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
         var hasAnyGrant = claim.HasAnyGrant(userspaceId, falseWorkGroupId, new List<string>{
-            Modules.GrantType.AdminsUserEntitiesWrite, Modules.GrantType.WorkGroupDeliveriesRead});
+            TestData.AdminsUserEntitiesWrite, TestData.BaseSystemWorkGroupRolesRead});
         Assert.False(hasAnyGrant);
     }
 
@@ -395,11 +395,11 @@ public class GrantsExtensionsTests
         var claim = TestData.CreateUserClaimPrincipal(userId);
 
         var packetToSet = TestData.CreatePacketWithGrant(
-            packetId, userspaceId, workGroupId, userId, Modules.GrantType.WorkGroupDeliveriesRead);
+            packetId, userspaceId, workGroupId, userId, TestData.BaseSystemWorkGroupRolesRead);
 
         PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
-        var hasGrant = claim.HasUserspaceAdminPanelGrant(userspaceId, Modules.GrantType.AdminsUserEntitiesWrite);
+        var hasGrant = claim.HasUserspaceAdminPanelGrant(userspaceId, TestData.AdminsUserEntitiesWrite);
         Assert.False(hasGrant);
     }
 
@@ -417,39 +417,13 @@ public class GrantsExtensionsTests
         var claim = TestData.CreateUserClaimPrincipal(userId);
 
         var packetToSet = TestData.CreatePacketWithGrant(
-            packetId, userspaceId, workGroupId, userId, Modules.GrantType.WorkGroupDeliveriesRead);
+            packetId, userspaceId, workGroupId, userId, TestData.BaseSystemWorkGroupRolesRead);
 
         PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
 
         var hasAnyGrant = claim.HasAnyUserspaceAdminPanelGrant(userspaceId, new List<string>{
-            Modules.GrantType.AdminsUserEntitiesWrite, Modules.GrantType.WorkGroupDeliveriesRead});
+            TestData.AdminsUserEntitiesWrite, TestData.BaseSystemWorkGroupRolesRead});
         Assert.False(hasAnyGrant);
-    }
-
-    [Theory(DisplayName = "GrantsExtensions: HasAnyAdminPanelGrant(): Проверка истина администратору пространства даже при ошибке рабочей группы.")]
-    [InlineData(sbyte.MaxValue)]
-    [InlineData(byte.MaxValue)]
-    public void ShouldProperlyReturnTrueForUserspaceAdminOnHasGrantRequest(int seed)
-    {
-        var sporadic = new Random(seed);
-        var packetId = sporadic.GetId();
-        var userId = sporadic.GetId();
-        var workGroupId = sporadic.GetId();
-        var falseWorkGroupId = sporadic.GetId();
-        var userspaceId = sporadic.GetId();
-
-        var packetToSet = TestData.CreatePacket(packetId, userspaceId, workGroupId, userId);
-        PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
-
-        var requestUserId = sporadic.GetId();
-
-        var adminPacket = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, requestUserId);
-        PacketRepository.Set(requestUserId, userspaceId.ToString(), key: null, new[] { adminPacket });
-
-        var claim = TestData.CreateUserClaimPrincipal(requestUserId);
-
-        var hasGrant = claim.HasGrant(userspaceId, falseWorkGroupId, Modules.GrantType.BaseSystemWorkGroupRolesRead);
-        Assert.True(hasGrant);
     }
 
     [Theory(DisplayName = "GrantsExtensions: HasAnyGrant(): Проверка истина при корректном запросе.")]
@@ -509,32 +483,6 @@ public class GrantsExtensionsTests
 
         var claim = TestData.CreateSystemUserClaimPrincipal();
         var grantToRequest = TestData.CreatePacketWithRandomGrant(sporadic, packetId, userspaceId, workGroupId, userId);
-        var hasAnyGrant = claim.HasAnyGrant(userspaceId, workGroupId, new[] { grantToRequest.Grants.First() });
-        Assert.True(hasAnyGrant);
-    }
-
-    [Theory(DisplayName = "GrantsExtensions: HasAnyGrant(): Проверка истина администратору пространства даже при ошибке рабочей группы.")]
-    [InlineData(sbyte.MaxValue)]
-    [InlineData(byte.MaxValue)]
-    public void ShouldProperlyReturnTrueForUserspaceAdminOnHasAnyGrantRequest(int seed)
-    {
-        var sporadic = new Random(seed);
-        var packetId = sporadic.GetId();
-        var userId = sporadic.GetId();
-        var workGroupId = sporadic.GetId();
-        var falseWorkGroupId = sporadic.GetId();
-        var userspaceId = sporadic.GetId();
-
-        var packetToSet = TestData.CreatePacket(packetId, userspaceId, workGroupId, userId);
-        PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
-
-        var requestUserId = sporadic.GetId();
-
-        var adminPacket = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, requestUserId);
-        PacketRepository.Set(requestUserId, userspaceId.ToString(), key: null, new[] { adminPacket });
-
-        var claim = TestData.CreateUserClaimPrincipal(requestUserId);
-        var grantToRequest = TestData.CreatePacketWithRandomGrant(sporadic, packetId, userspaceId, falseWorkGroupId, userId);
         var hasAnyGrant = claim.HasAnyGrant(userspaceId, workGroupId, new[] { grantToRequest.Grants.First() });
         Assert.True(hasAnyGrant);
     }
@@ -627,98 +575,6 @@ public class GrantsExtensionsTests
         Assert.True(hasAllGrants);
     }
 
-    [Theory(DisplayName = "GrantsExtensions: HasAllGrants(): Проверка истина администратору пространства даже при ошибке рабочей группы.")]
-    [InlineData(sbyte.MaxValue)]
-    [InlineData(byte.MaxValue)]
-    public void ShouldProperlyReturnTrueForUserspaceAdminOnHasAllGrantsRequest(int seed)
-    {
-        var sporadic = new Random(seed);
-        var packetId = sporadic.GetId();
-        var userId = sporadic.GetId();
-        var workGroupId = sporadic.GetId();
-        var falseWorkGroupId = sporadic.GetId();
-        var userspaceId = sporadic.GetId();
-
-        var packetToSet = TestData.CreatePacket(packetId, userspaceId, workGroupId, userId);
-        PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
-
-        var requestUserId = sporadic.GetId();
-
-        var adminPacket = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, requestUserId);
-        PacketRepository.Set(requestUserId, userspaceId.ToString(), key: null, new[] { adminPacket });
-
-        var claim = TestData.CreateUserClaimPrincipal(requestUserId);
-        var grantToRequest = TestData.CreatePacketWithRandomGrant(sporadic, packetId, userspaceId, falseWorkGroupId, userId);
-        var hasAllGrants = claim.HasAllGrants(userspaceId, workGroupId, new[] { grantToRequest.Grants.First() });
-        Assert.True(hasAllGrants);
-    }
-
-
-    [Theory(DisplayName = "GrantsExtensions: HasUserEntitiesGrant(): Проверка истина при корректном запросе.")]
-    [InlineData(sbyte.MaxValue)]
-    [InlineData(byte.MaxValue)]
-    [InlineData(short.MaxValue)]
-    [InlineData(ushort.MaxValue)]
-    public void ShouldProperlyReturnTrueIfUserHasUserEntitiesGrant(int seed)
-    {
-        var sporadic = new Random(seed);
-        var userId = sporadic.GetId();
-        PacketRepository.Set(userId, null, key: null, Array.Empty<PacketViewModel>());
-        var workGroupId = sporadic.GetId();
-        var userspaceId = sporadic.GetId();
-
-        var packetToSet = TestData.CreatePacketWithUserEntitiesGrant(_userspaceAdminPacketId, userspaceId, workGroupId, userId);
-        PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
-
-        var claim = TestData.CreateUserClaimPrincipal(userId);
-
-        var hasUsersEntitiesGrant = claim.HasUsersEntitiesGrant(userspaceId);
-        Assert.True(hasUsersEntitiesGrant);
-    }
-
-    [Theory(DisplayName = "GrantsExtensions: IsUserspaceAdmin(): Проверка истина при корректном запросе.")]
-    [InlineData(sbyte.MaxValue)]
-    [InlineData(byte.MaxValue)]
-    [InlineData(short.MaxValue)]
-    [InlineData(ushort.MaxValue)]
-    public void ShouldProperlyReturnTrueIfUserIsUserspaceAdmin(int seed)
-    {
-        var sporadic = new Random(seed);
-        var userId = sporadic.GetId();
-        PacketRepository.Set(userId, null, key: null, Array.Empty<PacketViewModel>());
-        var workGroupId = sporadic.GetId();
-        var userspaceId = sporadic.GetId();
-
-        var packetToSet = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, userId);
-        PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
-
-        var claim = TestData.CreateUserClaimPrincipal(userId);
-
-        var isUserspaceAdmin = claim.IsUserspaceAdmin(userspaceId);
-        Assert.True(isUserspaceAdmin);
-    }
-
-    [Theory(DisplayName = "GrantsExtensions: IsUserspaceAdmin(): Проверка ложь при отсутствии прав.")]
-    [InlineData(sbyte.MaxValue)]
-    [InlineData(byte.MaxValue)]
-    public void ShouldProperlyReturnFalseIfUserIsNotUserspaceAdmin(int seed)
-    {
-        var sporadic = new Random(seed);
-        var packetId = sporadic.GetId();
-        var userId = sporadic.GetId();
-        PacketRepository.Set(userId, null, key: null, Array.Empty<PacketViewModel>());
-        var workGroupId = sporadic.GetId();
-        var userspaceId = sporadic.GetId();
-
-        var packetToSet = TestData.CreatePacketWithRandomGrant(sporadic, packetId, 10, workGroupId, userId);
-
-        PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
-        var claim = TestData.CreateUserClaimPrincipal(userId);
-
-        var isUserspaceAdmin = claim.IsUserspaceAdmin(userspaceId);
-        Assert.False(isUserspaceAdmin);
-    }
-
     [Fact(DisplayName = "GrantsExtensions: IsSystemUser(): Проверка истина для системного пользователя.")]
     public void ShouldProperlyReturnTrueForSystemUser()
     {
@@ -767,53 +623,6 @@ public class GrantsExtensionsTests
         Assert.False(isSystemUser);
     }
 
-    [Theory(DisplayName = "GrantsExtensions: IsSuperUser(): Проверка истина для системного пользователя.")]
-    [InlineData(sbyte.MaxValue)]
-    [InlineData(byte.MaxValue)]
-    public void ShouldProperlyReturnTrueForSystemUserSuperUser(int seed)
-    {
-        var sporadic = new Random(seed);
-        var userspaceId = sporadic.GetId();
-        var claim = TestData.CreateSystemUserClaimPrincipal();
-
-        var isSuperUser = claim.IsSuperUser(userspaceId);
-        Assert.True(isSuperUser);
-    }
-
-    [Theory(DisplayName = "GrantsExtensions: IsSuperUser(): Проверка истина для администратора пространства.")]
-    [InlineData(sbyte.MaxValue)]
-    [InlineData(byte.MaxValue)]
-    public void ShouldProperlyReturnTrueForUserspaceAdminSuperUser(int seed)
-    {
-        var sporadic = new Random(seed);
-        var userId = sporadic.GetId();
-        PacketRepository.Set(userId, null, key: null, Array.Empty<PacketViewModel>());
-        var workGroupId = sporadic.GetId();
-        var userspaceId = sporadic.GetId();
-
-        var packetToSet = TestData.CreatePacketUserspaceAdmin(_userspaceAdminPacketId, userspaceId, workGroupId, userId);
-        PacketRepository.Set(userId, userspaceId.ToString(), key: null, packetToSet);
-
-        var claim = TestData.CreateUserClaimPrincipal(userId);
-
-        var isSuperUser = claim.IsSuperUser(userspaceId);
-        Assert.True(isSuperUser);
-    }
-
-    [Theory(DisplayName = "GrantsExtensions: IsSuperUser(): Проверка ложь для обычного пользователя.")]
-    [InlineData(sbyte.MaxValue)]
-    [InlineData(byte.MaxValue)]
-    public void ShouldProperlyReturnFalseForNonSuperUser(int seed)
-    {
-        var sporadic = new Random(seed);
-        var userId = sporadic.GetId();
-        var userspaceId = sporadic.GetId();
-        var claim = TestData.CreateUserClaimPrincipal(userId);
-
-        var isSuperUser = claim.IsSuperUser(userspaceId);
-        Assert.False(isSuperUser);
-    }
-
     [Theory(DisplayName = "GrantsExtensions: GetWorkGroupsWithGrant(): Проверка корректного получения списка идентификаторов рабочих групп.")]
     [InlineData(sbyte.MaxValue)]
     [InlineData(byte.MaxValue)]
@@ -858,7 +667,7 @@ public class GrantsExtensionsTests
         AddPacketsToRepository(userId, packets, invalidUserspaceId);
 
         var workGroupsWithGrant = claim.
-            GetWorkGroupsWithGrant(testUserspaceId, Modules.GrantType.BaseSystemWorkGroupRolesRead);
+            GetWorkGroupsWithGrant(testUserspaceId, TestData.BaseSystemWorkGroupRolesRead);
         Assert.Equal(workGroups, workGroupsWithGrant);
     }
 

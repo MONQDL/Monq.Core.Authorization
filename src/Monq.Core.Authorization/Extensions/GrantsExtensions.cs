@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Monq.Core.Authorization.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,28 +84,6 @@ public static class GrantsExtensions
         Implementation.IsWorkGroupManager(user, userspaceId, workGroupId);
 
     /// <summary>
-    /// Проверить, является ли пользователь с данным идентификатором <paramref name="userspaceId"/>
-    /// из <see cref="ClaimsPrincipal"/> администратором пользовательского пространства 
-    /// или обладает правом доступа к пользовательским сущностям.
-    /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <returns>Истина, если пользователь -- администратор заданного пользовательского пространства или обладает правом доступа к пользовательским сущностям.</returns>
-    public static bool IsUserspaceAdmin(this ClaimsPrincipal user, in long userspaceId)
-        => Implementation.IsUserspaceAdmin(user, userspaceId);
-
-    /// <summary>
-    /// Проверить, есть ли у пользователя
-    /// с данным идентификатором <paramref name="userspaceId"/>
-    /// право доступа к пользовательским сущностям.
-    /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <returns>Истина, если у пользователя есть право доступа к пользовательским сущностям.</returns>
-    public static bool HasUsersEntitiesGrant(this ClaimsPrincipal user, in long userspaceId)
-        => Implementation.HasUsersEntitiesGrant(user, userspaceId);
-
-    /// <summary>
     /// Проверить есть ли у пользователя
     /// с данным идентификатором <paramref name="userspaceId"/>
     /// право из админ. панели.
@@ -114,7 +92,7 @@ public static class GrantsExtensions
     /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
     /// <param name="adminPanelGrant">Строковое представление права админ. панели (например, "pl.admins.user-entities-write").</param>
     /// <returns>Истина при наличии права.</returns>
-    public static bool HasUserspaceAdminPanelGrant(this ClaimsPrincipal? user, long userspaceId, string adminPanelGrant)
+    public static bool HasUserspaceAdminPanelGrant(this ClaimsPrincipal user, long userspaceId, string adminPanelGrant)
         => Implementation.HasUserspaceAdminPanelGrant(user, userspaceId, adminPanelGrant);
 
     /// <summary>
@@ -136,16 +114,6 @@ public static class GrantsExtensions
     /// <returns>Истина, если пользователь обладает аутентификационными данными системного.</returns>
     public static bool IsSystemUser(this ClaimsPrincipal user)
         => Implementation.IsSystemUser(user);
-
-    /// <summary>
-    /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/> системным или
-    /// администратором пользовательского пространства с данным идентификатором <paramref name="userspaceId"/>.
-    /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <returns>Истина, если пользователь -- системный или администратор заданного пользовательского пространства.</returns>
-    public static bool IsSuperUser(this ClaimsPrincipal user, in long userspaceId)
-        => Implementation.IsSuperUser(user, userspaceId);
 
     /// <summary>
     /// Получить Id рабочих групп, в которых у пользователя из <see cref="ClaimsPrincipal"/>
@@ -216,7 +184,9 @@ public static class GrantsExtensions
         var objectTypeClaim = user.Claims.FirstOrDefault(x => x.Type == ObjectType);
         var objectIdClaim = user.Claims.FirstOrDefault(x => x.Type == ObjectId);
 
-        if (objectTypeClaim == null || objectIdClaim == null) return null;
+        if (objectTypeClaim == null || objectIdClaim == null) 
+            return null;
+
         return $"{objectTypeClaim.Value}:{objectIdClaim.Value}";
     }
 }

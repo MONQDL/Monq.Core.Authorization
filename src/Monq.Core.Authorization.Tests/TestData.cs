@@ -1,4 +1,4 @@
-﻿using IdentityModel;
+using IdentityModel;
 using Monq.Core.Authorization.Models;
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,9 @@ namespace Monq.Core.Authorization.Tests;
 
 public static class TestData
 {
+    public const string BaseSystemWorkGroupRolesRead = "grant-1";
+    public const string AdminsUserEntitiesWrite = "pl.admins.grant";
+
     public static PacketViewModel CreatePacket(in long packetId, in long userspaceId, in long workGroupId, in long userId) =>
         CreatePacketWithMultipleWorkGroups(packetId, userspaceId, new[] { workGroupId }, userId);
 
@@ -25,7 +28,7 @@ public static class TestData
             }),
             Grants = new[]
             {
-                Modules.GrantType.BaseSystemWorkGroupRolesRead
+                BaseSystemWorkGroupRolesRead
             }
         };
 
@@ -88,8 +91,7 @@ public static class TestData
             },
             Grants = new[]
             {
-                Modules.GrantType.CloudManagementGrantsMetaWrite,
-                Modules.GrantType.AdminsUserEntitiesWrite
+                AdminsUserEntitiesWrite
             }
         };
 
@@ -109,7 +111,7 @@ public static class TestData
             },
             Grants = new[]
             {
-                Modules.GrantType.AdminsUserEntitiesWrite
+                AdminsUserEntitiesWrite
             }
         };
 
