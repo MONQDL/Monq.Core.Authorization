@@ -47,12 +47,6 @@ public class FakeGrantsImpl : IGrantsExtensions
     public Func<ClaimsPrincipal?, long>? SubjectFunc { get; set; }
 
     /// <summary>
-    /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
-    /// администратором пользовательского пространства с данным идентификатором.
-    /// </summary>
-    public Func<ClaimsPrincipal?, long, bool>? IsUserspaceAdminFunc { get; set; }
-
-    /// <summary>
     /// Проверить, есть ли у пользователь
     /// из <see cref="ClaimsPrincipal"/> доступ к пользовательским сущностям.
     /// </summary>
@@ -74,12 +68,6 @@ public class FakeGrantsImpl : IGrantsExtensions
     /// системным пользователем.
     /// </summary>
     public Func<ClaimsPrincipal?, bool>? IsSystemUserFunc { get; set; }
-
-    /// <summary>
-    /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/> системным или
-    /// администратором пользовательского пространства с данным идентификатором.
-    /// </summary>
-    public Func<ClaimsPrincipal?, long, bool>? IsSuperUserFunc { get; set; }
 
     /// <summary>
     /// Получить Id рабочих групп, в которых у пользователя из <see cref="ClaimsPrincipal"/>
