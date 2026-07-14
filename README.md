@@ -5,28 +5,25 @@
 <!-- TOC depthFrom:2 -->
 
 - [monq-core-authorization](#monq-core-authorization)
-  - [История изменений](#%D0%B8%D1%81%D1%82%D0%BE%D1%80%D0%B8%D1%8F-%D0%B8%D0%B7%D0%BC%D0%B5%D0%BD%D0%B5%D0%BD%D0%B8%D0%B9)
-    - [4.0](#40)
-    - [3.2](#32)
-    - [3.0](#30)
-    - [2.1](#21)
   - [Установка](#%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0)
   - [Подключение](#%D0%BF%D0%BE%D0%B4%D0%BA%D0%BB%D1%8E%D1%87%D0%B5%D0%BD%D0%B8%D0%B5)
+  - [OpenTelemetry](#opentelemetry)
   - [Реализуемые методы расширения](#%D1%80%D0%B5%D0%B0%D0%BB%D0%B8%D0%B7%D1%83%D0%B5%D0%BC%D1%8B%D0%B5-%D0%BC%D0%B5%D1%82%D0%BE%D0%B4%D1%8B-%D1%80%D0%B0%D1%81%D1%88%D0%B8%D1%80%D0%B5%D0%BD%D0%B8%D1%8F)
     - [Subject()](#subject)
     - [Userspace()](#userspace)
     - [Packets()](#packets)
     - [IsSystemUser()](#issystemuser)
-    - [IsUserspaceAdmin(long userspaceId)](#isuserspaceadminlong-userspaceid)
-    - [IsSuperUser(long userspaceId)](#issuperuserlong-userspaceid)
+    - [IsWorkGroupManager(long userspaceId, long workGroupId)](#isworkgroupmanagerlong-userspaceid-long-workgroupid)
     - [HasGrant(long userspaceId, long workGroupId, string grantName)](#hasgrantlong-userspaceid-long-workgroupid-string-grantname)
     - [HasAnyGrant(long userspaceId, long workGroupId, IEnumerable&lt;string&gt; grantNames)](#hasanygrantlong-userspaceid-long-workgroupid-ienumerableltstringgt-grantnames)
     - [HasAllGrants(long userspaceId, long workGroupId, IEnumerable&lt;string&gt; grantNames)](#hasallgrantslong-userspaceid-long-workgroupid-ienumerableltstringgt-grantnames)
+    - [HasUserspaceAdminPanelGrant(long userspaceId, string adminPanelGrant)](#hasuserspaceadminpanelgrantlong-userspaceid-string-adminpanelgrant)
+    - [HasAnyUserspaceAdminPanelGrant(long userspaceId, IEnumerable&lt;string&gt; adminPanelGrantNames)](#hasanyuserspaceadminpanelgrantlong-userspaceid-ienumerableltstringgt-adminpanelgrantnames)
     - [GetWorkGroupsWithGrant(long userspaceId, string grantName)](#getworkgroupswithgrantlong-userspaceid-string-grantname)
     - [GetWorkGroupsWithAnyGrant(long userspaceId, IEnumerable&lt;string&gt; grantNames)](#getworkgroupswithanygrantlong-userspaceid-ienumerableltstringgt-grantnames)
     - [GetWorkGroupsWithAllGrants(long userspaceId, IEnumerable&lt;string&gt; grantNames)](#getworkgroupswithallgrantslong-userspaceid-ienumerableltstringgt-grantnames)
     - [WorkGroups(long userspaceId)](#workgroupslong-userspaceid)
-    - [Userspaces()](#userspaces)
+    - [ObjectKey()](#objectkey)
   - [Тестирование](#%D1%82%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)
     - [1. Класс-реализация интерфейса](#1-%D0%BA%D0%BB%D0%B0%D1%81%D1%81-%D1%80%D0%B5%D0%B0%D0%BB%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F-%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D0%B0)
     - [2. Методы расширения](#2-%D0%BC%D0%B5%D1%82%D0%BE%D0%B4%D1%8B-%D1%80%D0%B0%D1%81%D1%88%D0%B8%D1%80%D0%B5%D0%BD%D0%B8%D1%8F)
@@ -36,43 +33,6 @@
     - [5. Альтернативные подходы](#5-%D0%B0%D0%BB%D1%8C%D1%82%D0%B5%D1%80%D0%BD%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5-%D0%BF%D0%BE%D0%B4%D1%85%D0%BE%D0%B4%D1%8B)
 
 <!-- /TOC -->
-
-## История изменений
-
-### 4.0
-
-- Произведено обновление до .NET Core 3.0
-
-### 3.2
-
-- Переломные изменения:
-    - Удалено свойство владельца пакета прав _openWorkGroups_. Значения идентификаторов рабочих групп, которым предоставляется доступ к пакету, больше не учитываются.
-
-### 3.0
-
-- Переломные изменения:
-    - Подключение библиотеки авторизации теперь не требует отдельного класса опций авторизации. Вместо этого используются стандартные поставщики конфигурации приложения; сервис пользовательских прав задаётся ключом "`BaseUri`".
-    - Перечисленные ниже методы теперь требуют обязательного указания идентификатора пользовательского пространства:
-        - [HasGrant(long userspaceId, long workGroupId, string grantName)](#hasgrantlong-userspaceid-long-workgroupid-string-grantname)
-        - [HasAnyGrant(long userspaceId, long workGroupId, IEnumerable&lt;string&gt; grantNames)](#hasanygrantlong-userspaceid-long-workgroupid-ienumerable&ltstring&gt-grantnames)
-        - [HasAllGrants(long userspaceId, long workGroupId, IEnumerable&lt;string&gt; grantNames)](#hasallgrantslong-userspaceid-long-workgroupid-ienumerable&ltstring&gt-grantnames)
-    - Удалён _IsCloudAdmin()_ как избыточный и не отвечающий требованиям безопасности.
-    - Метод [IsUserspaceAdmin()](#isuserspaceadminlong-userspaceid) теперь возвращает `false` для системного пользователя.
-    - Удалено _AutoAssign_-свойство псевдореализации прав `FakeGrantsImpl`.
-    - _RevertToDefaults()_ перенесён из `GrantsExtensions` в `FakeGrantsImpl`, где имеет больше смысла и не требует добавления дополнительных пространств имён.
-- Улучшения:
-    - Методы [HasGrant()](#hasgrantlong-userspaceid-long-workgroupid-string-grantname), [HasAnyGrant()](#hasanygrantlong-userspaceid-long-workgroupid-ienumerable&ltstring&gt-grantnames), [HasAllGrants()](#hasallgrantslong-userspaceid-long-workgroupid-ienumerable&ltstring&gt-grantnames) теперь безусловно возвращают `true`, если вызваны администратором пользовательского пространства (аналогично системному пользователю).
-    - Добавлен метод [IsSuperUser()](#issuperuserlong-userspaceid) для проверки пользователя на права системного пользователя или администратора данного пространства.
-
-### 2.1
-
-- Переломные изменения:
-    - Перечисленные ниже методы теперь требуют обязательного указания идентификатора пользовательского пространства:
-        - [GetWorkGroupsWithGrant(long userspaceId, string grantName)](#getworkgroupswithgrantlong-userspaceid-string-grantname)
-        - [GetWorkGroupsWithAnyGrant(long userspaceId, IEnumerable&lt;string&gt; grantNames)](#getworkgroupswithanygrantlong-userspaceid-ienumerable&ltstring&gt-grantnames)
-        - [GetWorkGroupsWithAllGrants(long userspaceId, IEnumerable&lt;string&gt; grantNames)](#getworkgroupswithallgrantslong-userspaceid-ienumerable&ltstring&gt-grantnames)
-        - [WorkGroups(long userspaceId)](#workgroupslong-userspaceid)
-    - При невозможности получить идентификатор пользовательского пространства в методе [Userspace()](#userspace) теперь _не возвращается_ значение по умолчанию (было `0`), а выбрасывается исключение типа `UserspaceNotFoundException`.
 
 ## Установка
 
@@ -102,6 +62,49 @@ public void Configure(IApplicationBuilder app)
 ```
 
 Подключение авторизации следует производить перед _app.UseMvc()_.
+
+### Опции
+
+Для передачи пользовательских опций используйте перегрузку с `MonqAuthorizationOptions`:
+
+```CSharp
+app.UseMonqAuthorization(new MonqAuthorizationOptions
+{
+    UseCache = true,        // кэширование прав (по умолчанию true)
+    CacheTime = TimeSpan.FromSeconds(3) // длительность кэширования (по умолчанию 3 сек)
+}, Configuration);
+```
+
+## OpenTelemetry
+
+Библиотека предоставляет `ActivitySource` с именем `Monq.Core.Authorization` для трассировки операций авторизации.
+
+### Подключение
+
+При настройке OpenTelemetry в приложении добавьте источник:
+
+```CSharp
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing => tracing
+        .AddSource("Monq.Core.Authorization")
+        // ... остальные источники
+    );
+```
+
+### Создаваемые span'ы
+
+| Имя | Kind | Описание |
+|---|---|---|
+| `MonqAuthorization` | Internal | Процесс обработки авторизации в middleware |
+
+### Теги
+
+| Тег | Тип | Описание |
+|---|---|---|
+| `auth.user.id` | long | Идентификатор пользователя |
+| `auth.skipped` | bool | Авторизация пропущена (системный пользователь или sub == 0) |
+
+> **Примечание:** HTTP-запросы к сервису пользовательских прав автоматически трассируются через `AddHttpClientInstrumentation()`.
 
 ## Реализуемые методы расширения
 
@@ -172,7 +175,7 @@ public class TestController : Controller
     public async Task<IActionResult> GetAll()
     {
         ...
-        var packets = User.Packets(); // перечисление пакетов прав пользователя.
+        var packets = User.Packets(userspaceId); // перечисление пакетов прав пользователя.
         ...
     }
 }
@@ -180,79 +183,18 @@ public class TestController : Controller
 
 > Свойство контроллера _User_ унаследовано из `ControllerBase` в пространстве имён `Microsoft.AspNetCore.Mvc`.
 
-Метод возвращает значение типа перечисление с моделью `PacketViewModel`, определённой в соответствующем файле проекта (_src\Monq.Core.Authorization\ViewModels\PacketViewModel.cs_), со значимыми свойствами:
+Аргументы:
 
-```CSharp
-public class PacketViewModel
-{
-    /// <summary>
-    /// Идентификатор пакета пользовательских прав.
-    /// </summary>
-    public long Id { get; set; }
+- _userspaceId_ -- 64-разрядное знаковое целое, идентификатор пользовательского пространства. Например, `17`.
 
-    /// <summary>
-    /// Имя пакета пользовательских прав.
-    /// </summary>
-    public string Name { get; set; }
+Метод возвращает значение типа перечисление `IEnumerable<PacketViewModel>`, модель определена в NuGet-пакете `Monq.Core.Authorization.Models` со значимыми свойствами:
 
-    /// <summary>
-    /// Описание пакета пользовательских прав.
-    /// </summary>
-    public string Description { get; set; }
-
-    /// <summary>
-    /// Является ли пакет доступным только для чтения.
-    /// </summary>
-    public bool IsReadOnly { get; set; }
-
-    /// <summary>
-    /// Коллекция прав доступа пакета.
-    /// </summary>
-    public IEnumerable<string> Grants { get; set; }
-
-    /// <summary>
-    /// Коллекция владельцев пакета.
-    /// </summary>
-    public IEnumerable<PacketOwnerViewModel> Owners { get; set; }
-}
-```
-
-Где значимые:
-
+- _Id_ -- идентификатор пакета прав.
 - _Name_ -- имя пакета прав. Например, `Администратор пространства`.
+- _Description_ -- описание пакета прав.
 - _IsReadOnly_ -- флаг принадлежности пакета к системным. Например, true.
 - _Grants_ -- перечисление строковых трёхсоставных определений прав. Например, `{ "base-system.rsm.read", "cloud-management.grants-meta.read" }`.
 - _Owners_ -- коллекция рабочих групп-владельцев и их пользователей пакета прав.
-
-..., -- и, соответственно, `PacketOwnerViewModel`, определённой в соответствующем файле проекта (_src\Monq.Core.Authorization\ViewModels\PacketOwnerViewModel.cs_), со значимыми свойствами:
-
-```CSharp
-public class PacketOwnerViewModel
-{
-    /// <summary>
-    /// Идентификатор рабочей группы-владельца пакета.
-    /// </summary>
-    public long WorkGroupId { get; set; }
-
-    /// <summary>
-    /// Идентификатор пользовательского пространства.
-    /// </summary>
-    public long UserspaceId { get; set; }
-
-    /// <summary>
-    /// Коллекция идентификаторов пользователей пакета.
-    /// </summary>
-    public IEnumerable<long> Users { get; set; }
-}
-```
-
-Где:
-
-- _WorkGroupId_ -- идентификатор рабочей группы в сервисе рабочих групп. Например, `23`.
-- _UserspaceId_ -- идентификатор пользовательского пространства рабочей группы. Например, `1`.
-- _Users_ -- коллекция идентификаторов пользователей рабочей группы, имеющих доступ до прав пакета. Например, `{ 1, 15, 41 }`.
-
-..., -- которые позволяют вкупе исчерпывающе определить права пользователя в каждой рабочей группе.
 
 Для простоты восприятия можно воспринимать пакеты прав как роли рабочих групп, владельцев пакетов -- как рабочие группы, в которых эти роли определены.
 
@@ -280,38 +222,9 @@ public class TestController : Controller
 
 - если у пользователя в его _Claim_ 'ах присутствует идентификатор системного пользователя;
 
-### IsUserspaceAdmin(long userspaceId)
+### IsWorkGroupManager(long userspaceId, long workGroupId)
 
-Для проверки наличия прав администрирования данного облачного пространства у пользователя запроса из `ClaimsPrincipal` свойства _User_ используется метод расширения _IsUserspaceAdmin(long userspaceId)_.
-
-```CSharp
-[Route("api/test")]
-public class TestController : Controller
-{
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        ...
-        var canCreateWorkGroups = User.IsUserspaceAdmin(17);
-        // true, если пользователь администрирует данное пользовательское пространство.
-        ...
-    }
-}
-```
-
-> Свойство контроллера _User_ унаследовано из `ControllerBase` в пространстве имён `Microsoft.AspNetCore.Mvc`.
-
-Аргументы:
-
-- _userspaceId_ -- 64-разрядное знаковое целое, идентификатор пользовательского пространства, администрирование которого проверяется. Например, `17`.
-
-Метод возвращает `true`:
-
-- если пользователь является администратором данного пользовательского пространства;
-
-### IsSuperUser(long userspaceId)
-
-Для проверки наличия прав системного пользователя или администрирования данного облачного пространства у пользователя запроса из `ClaimsPrincipal` свойства _User_ используется метод расширения _IsSuperUser(long userspaceId)_.
+Для проверки, является ли пользователь менеджером рабочей группы, используется метод расширения _IsWorkGroupManager(long userspaceId, long workGroupId)_.
 
 ```CSharp
 [Route("api/test")]
@@ -321,8 +234,8 @@ public class TestController : Controller
     public async Task<IActionResult> GetAll()
     {
         ...
-        var canCreateWorkGroups = User.IsSuperUser(17);
-        // true, если пользователь является системным или администрирует данное пользовательское пространство.
+        var isManager = User.IsWorkGroupManager(17, 23);
+        // true, если пользователь является менеджером рабочей группы 23 в пространстве 17.
         ...
     }
 }
@@ -332,12 +245,12 @@ public class TestController : Controller
 
 Аргументы:
 
-- если у пользователя в его _Claim_ 'ах присутствует идентификатор системного пользователя;
-- _userspaceId_ -- 64-разрядное знаковое целое, идентификатор пользовательского пространства, администрирование которого проверяется. Например, `17`.
+- _userspaceId_ -- 64-разрядное знаковое целое, идентификатор пользовательского пространства. Например, `17`.
+- _workGroupId_ -- 64-разрядное знаковое целое, идентификатор рабочей группы. Например, `23`.
 
 Метод возвращает `true`:
 
-- если пользователь является администратором данного пользовательского пространства;
+- если пользователь является менеджером выбранной рабочей группы (имеет системный пакет типа `Manager`);
 
 ### HasGrant(long userspaceId, long workGroupId, string grantName)
 
@@ -370,7 +283,6 @@ public class TestController : Controller
 
 - если у пользователя запроса есть запрашиваемые права;
 - если вызван системным пользователем;
-- если вызван администратором запрашиваемого пользовательского пространства;
 
 ### HasAnyGrant(long userspaceId, long workGroupId, IEnumerable&lt;string&gt; grantNames)
 
@@ -404,7 +316,6 @@ public class TestController : Controller
 
 - если у пользователя запроса есть хотя бы одно из запрашиваемых прав;
 - если вызван системным пользователем;
-- если вызван администратором запрашиваемого пользовательского пространства;
 
 ### HasAllGrants(long userspaceId, long workGroupId, IEnumerable&lt;string&gt; grantNames)
 
@@ -431,13 +342,72 @@ public class TestController : Controller
 
 - _userspaceId_ -- 64-разрядное знаковое целое, идентификатор пользовательского пространства, для которого проверяются соответствующие права. Например, `17`.
 - _workGroupId_ -- 64-разрядное знаковое целое, идентификатор рабочей группы, в которой проверяются соответствующие права. Например, `23`.
-- _grantNames_ -- переменное количество строк, трёхчленных определений имени пользовательского права. Например, `base-system.timeline.read`, `base-system.work-group.roles-write"`.
+- _grantNames_ -- переменное количество строк, трёхчленных определений имени пользовательского права. Например, `base-system.timeline.read`, `base-system.work-group.roles-write`.
 
 Метод возвращает `true`:
 
 - если у пользователя запроса есть все запрашиваемые права;
 - если вызван системным пользователем;
-- если вызван администратором запрашиваемого пользовательского пространства;
+
+### HasUserspaceAdminPanelGrant(long userspaceId, string adminPanelGrant)
+
+Для проверки наличия права из админ. панели у пользователя запроса из `ClaimsPrincipal` свойства _User_ используется метод расширения _HasUserspaceAdminPanelGrant(long userspaceId, string adminPanelGrant)_.
+
+```CSharp
+[Route("api/test")]
+public class TestController : Controller
+{
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        ...
+        var canManageUsers = User.HasUserspaceAdminPanelGrant(17, "pl.admins.user-entities-write");
+        // true, если у пользователя есть право админ. панели в данном пространстве.
+        ...
+    }
+}
+```
+
+> Свойство контроллера _User_ унаследовано из `ControllerBase` в пространстве имён `Microsoft.AspNetCore.Mvc`.
+
+Аргументы:
+
+- _userspaceId_ -- 64-разрядное знаковое целое, идентификатор пользовательского пространства. Например, `17`.
+- _adminPanelGrant_ -- строка, определение права админ. панели. Например, `pl.admins.user-entities-write`.
+
+Метод возвращает `true`:
+
+- если у пользователя запроса есть указанное право админ. панели в данном пространстве;
+
+### HasAnyUserspaceAdminPanelGrant(long userspaceId, IEnumerable&lt;string&gt; adminPanelGrantNames)
+
+Для проверки наличия хотя бы одного из прав админ. панели у пользователя запроса из `ClaimsPrincipal` свойства _User_ используется метод расширения _HasAnyUserspaceAdminPanelGrant(long userspaceId, IEnumerable&lt;string&gt; adminPanelGrantNames)_.
+
+```CSharp
+[Route("api/test")]
+public class TestController : Controller
+{
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        ...
+        var canManageSomething = User.HasAnyUserspaceAdminPanelGrant(17, new[] { "pl.admins.user-entities-write", "pl.admins.content-write" });
+        // true, если у пользователя есть хотя бы одно из указанных прав админ. панели.
+        ...
+    }
+}
+```
+
+> Свойство контроллера _User_ унаследовано из `ControllerBase` в пространстве имён `Microsoft.AspNetCore.Mvc`.
+
+Аргументы:
+
+- _userspaceId_ -- 64-разрядное знаковое целое, идентификатор пользовательского пространства. Например, `17`.
+- _adminPanelGrantNames_ -- переменное количество строк, определений прав админ. панели. Например, `pl.admins.user-entities-write`, `pl.admins.content-write`.
+
+Метод возвращает `true`:
+
+- если у пользователя запроса есть хотя бы одно из указанных прав админ. панели в данном пространстве;
 
 ### GetWorkGroupsWithGrant(long userspaceId, string grantName)
 
@@ -554,28 +524,15 @@ public class TestController : Controller
 
 Метод возвращает значение типа перечисление 64-разрядных знаковых целых, `IEnumerable<long>`.
 
-### Userspaces()
+### ObjectKey()
 
-Для получения идентификаторов пространств пользователя, в рабочих группах которых у пользователя запроса из `ClaimsPrincipal` свойства _User_ есть какие-либо права, используется метод расширения _Userspaces()_.
+Для генерации уникального ключа сервисного пользователя используется метод расширения _ObjectKey()_.
 
 ```CSharp
-[Route("api/test")]
-public class TestController : Controller
-{
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        ...
-        var allUserspaces = User.Userspaces();
-        // перечисление идентификаторов пространств пользователя.
-        ...
-    }
-}
+var objectKey = user.ObjectKey(); // например, "smon-res-owner:12345"
 ```
 
-> Свойство контроллера _User_ унаследовано из `ControllerBase` в пространстве имён `Microsoft.AspNetCore.Mvc`.
-
-Метод возвращает значение типа перечисление 64-разрядных знаковых целых, `IEnumerable<long>`.
+Метод возвращает строку в формате `objectType:objectId`, составленную из соответствующих claims пользователя, или `null` при отсутствии необходимых claims.
 
 ## Тестирование
 
@@ -585,7 +542,7 @@ public class TestController : Controller
 
 ### 1. Класс-реализация интерфейса
 
-Начиная с версии `1.2.0` библиотека включает в себя эталонную имплементацию класса-подмены `IGrantsExtensions`. Это сделано для достижения двух основных целей:
+Библиотека включает в себя эталонную имплементацию класса-подмены `IGrantsExtensions`. Это сделано для достижения двух основных целей:
 
 - избегания повторения однотипного кода в тестах проектов, использующих авторизацию (предполагается, что таких будет большинство);
 - отсутствия необходимости вносить изменения в каждую из реализаций при дальнейших изменениях API.
@@ -600,31 +557,18 @@ public class TestController : Controller
 public class FakeGrantsImpl : IGrantsExtensions
 {
     ...
-    public Func<ClaimsPrincipal, long> SubjectFunc { get; set; }
-    public long Subject(ClaimsPrincipal user) => SubjectFunc(user);
+    public Func<ClaimsPrincipal?, long>? SubjectFunc { get; set; }
+    public long Subject(ClaimsPrincipal? user) =>
+        SubjectFunc?.Invoke(user) ?? _defaultImpl.Subject(user);
 
     public void Assign() => GrantsExtensions.Implementation = this;
     ...
 }
 ```
 
-Кроме того, реализуется свойство _AutoAssign_, которое может указывать используемой реализации функций на необходимость автоматического вызова метода _Assign()_ при назначении. Его назначение вынесено в конструктор.
-
-```CSharp
-public class FakeGrantsImpl : IGrantsExtensions
-{
-    ...
-    public bool AutoAssign { get; set; }
-    public FakeGrantsImpl(bool autoAssign = false) => AutoAssign = autoAssign;
-    ...
-}
-```
-
-> **Ремарка** В общем случае, использование _AutoAssign_ будет считаться дурным тоном (антипаттерном), потому как реализует и полагается на побочный эффект; но в определённых ситуациях может быть полезным, поэтому такая возможность на страницах этого руководства не только упоминается, но и рассматривается.
-
 ### 2. Методы расширения
 
-Логика, т.е. подмена отсутствующих функций используемыми в данном тесте, в такой реализации выносится в отдельный класс с методами расширения -- уже на стороне тестовой библиотеки, потому что эталонной реализации таких методов быть не может. Тем не менее, начиная с версии `1.3.1` библиотеки эталонная реализация в случае отсутствия подменяемых функций обращается к реализации по умолчанию, поэтому некоторые тесты в корректном окружении могут не требовать подмены _каждого_ из методов (как _UseSubject()_ из примера ниже).
+Логика, т.е. подмена отсутствующих функций используемыми в данном тесте, в такой реализации выносится в отдельный класс с методами расширения -- уже на стороне тестовой библиотеки, потому что эталонной реализации таких методов быть не может. Тем не менее, эталонная реализация в случае отсутствия подменяемых функций обращается к реализации по умолчанию, поэтому некоторые тесты в корректном окружении могут не требовать подмены _каждого_ из методов (как _UseSubject()_ из примера ниже).
 
 Такой подход позволяет более гибкое создание экземпляра подмены методов расширения прав в рамках "текучего интерфейса" (_fluent interface_, Martin Fowler) через цепочки методов (_method chaining_, Eric Evans) конструктора.
 
@@ -642,7 +586,7 @@ public static class FakeGrantsExtensions
 
     public static FakeGrantsImpl FakeHasGrant(this FakeGrantsImpl fakeGrants, bool value)
     {
-        fakeGrants.HasGrantFunc = (user, workGroup, grantName) => value;
+        fakeGrants.HasGrantFunc = (user, userspaceId, workGroup, grantName) => value;
         return fakeGrants;
     }
     ...
@@ -698,7 +642,7 @@ public static class FakeGrantsExtensions
     ...
     public static FakeGrantsImpl FakeHasGrant(this FakeGrantsImpl fakeGrants, long subjectId, long workGroupId, string grant)
     {
-        fakeGrants.HasGrantFunc = (user, workGroup, grantName) =>
+        fakeGrants.HasGrantFunc = (user, userspaceId, workGroup, grantName) =>
         {
             if (user.Subject() == subjectId
                 && workGroup == workGroupId
@@ -719,7 +663,7 @@ public static class FakeGrantsExtensions
 
 ### 3. Практическая реализация
 
-Для примера рассмотрим участок кода, навеянный [описанием метода расширения HasGrant(long workGroupId, string grant)](#hasgrantlong-workgroupid-string-grant), и гипотетический тест, который с помощью [описанных выше техник](#2-методы-расширения) могли бы написать.
+Для примера рассмотрим участок кода, навеянный [описанием метода расширения HasGrant(long userspaceId, long workGroupId, string grant)](#hasgrantlong-userspaceid-long-workgroupid-string-grant), и гипотетический тест, который с помощью [описанных выше техник](#2-методы-расширения) могли бы написать.
 
 Тестируемый участок будет выглядеть следующим образом:
 
@@ -729,7 +673,7 @@ public async Task<IActionResult> GetAll()
 {
     ...
     var workGroupId = _workGroupService.GetWorkGroupId();
-    var canReadRsm = User.HasGrant(workGroupId, "base-system.rsm.read");
+    var canReadRsm = User.HasGrant(userspaceId, workGroupId, "base-system.rsm.read");
     if (!canReadRsm)
         return StatusCode(StatusCodes.Status403Forbidden);
     ...
@@ -759,7 +703,7 @@ public async Task ShouldProperlyGetAll()
 }
 ```
 
-После вызова _fakeGrants.Assign();_ обращение к методу расширения _User.HasGrant(workGroupId, "base-system.rsm.read");_ будет перенаправлено в новый экземпляр `FakeGrantsImpl`, где этот метод вызовет переопределённую нами функцию _HasGrantFunc_. Поскольку имплементация _HasGrantFunc_ в нашем случае прямо обращается к другому методу расширения, _Subject()_, также переопределяемому расширением _UseSubject()_. Конечно, такая реализация возможна только при использовании тестов, переопределяющих пользователя контекста контроллера.
+После вызова _fakeGrants.Assign();_ обращение к методу расширения _User.HasGrant(userspaceId, workGroupId, "base-system.rsm.read");_ будет перенаправлено в новый экземпляр `FakeGrantsImpl`, где этот метод вызовет переопределённую нами функцию _HasGrantFunc_. Поскольку имплементация _HasGrantFunc_ в нашем случае прямо обращается к другому методу расширения, _Subject()_, также переопределяемому расширением _UseSubject()_. Конечно, такая реализация возможна только при использовании тестов, переопределяющих пользователя контекста контроллера.
 
 ```CSharp
 TestController CreateController(long subjectId)
@@ -779,12 +723,12 @@ TestController CreateController(long subjectId)
 ```CSharp
 [Fact(DisplayName = "TestController: GetAll: Проверка корректного получения тестовых данных.")]
 public async Task ShouldProperlyGetAll()
-{.
+{
     var fakeGrants = new FakeGrantsImpl()
         .FakeIsSystemUser(true); // Подменяется метод IsSystemUser()
     fakeGrants.Assign();
     ... // Выполнение тестов
-    fakeGrants.RevertToDefaults(); // Использовать IsSystemUser() по умолнчаию
+    fakeGrants.RevertToDefaults(); // Использовать IsSystemUser() по умолчанию
 }
 ```
 
@@ -800,14 +744,14 @@ var fakeGrants = new FakeGrantsImpl()
 fakeGrants.Assign();
 ```
 
->В этом примере будет установлено только второе право, а вызов _User.HasGrant(workGroupId, "base-system.rsm.read")_ вернёт `false`.
+>В этом примере будет установлено только второе право, а вызов _User.HasGrant(userspaceId, workGroupId, "base-system.rsm.read")_ вернёт `false`.
 
 В качестве решения для указанных ситуаций предлагаются перегрузки, принимающие множество прав, например:
 
 ```CSharp
 public static FakeGrantsImpl FakeHasGrant(this FakeGrantsImpl fakeGrants, long subjectId, long workGroupId, IEnumerable<string> grants)
 {
-    fakeGrants.HasGrantFunc = (user, workGroup, grantName) =>
+    fakeGrants.HasGrantFunc = (user, userspaceId, workGroup, grantName) =>
     {
         if (user.Subject() == subjectId
             && workGroup == workGroupId

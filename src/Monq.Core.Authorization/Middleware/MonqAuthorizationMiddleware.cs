@@ -6,14 +6,13 @@ using Monq.Core.Authorization.Extensions;
 using Monq.Core.Authorization.Helpers;
 using Monq.Core.Authorization.JsonSerializerContexts;
 using Monq.Core.Authorization.Models;
+using Monq.Core.Authorization.Telemetry;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Monq.Core.Authorization.Middleware;
@@ -33,7 +32,6 @@ public class MonqAuthorizationMiddleware
     readonly string _userGrantsApiUri;
     readonly TimeSpan _connectionTimeout = TimeSpan.FromSeconds(30);
     readonly MonqAuthorizationOptions _options;
-    readonly Stopwatch _sw = new Stopwatch();
 
     static IEnumerable<string> _forwardedHeaders { get; }
         = new[] { "x-trace-event-id", "x-smon-userspace-id" };
@@ -59,7 +57,7 @@ public class MonqAuthorizationMiddleware
         _httpClientFactory = httpClientFactory;
         _options = options ?? new();
         _next = next;
-        _userGrantsApiUri = configuration[_servicesBaseUri] 
+        _userGrantsApiUri = configuration[_servicesBaseUri]
             ?? throw new Exception("Can't find 'BaseUri' in IConfiguration providers.");
         _logger = logger;
 
@@ -72,28 +70,34 @@ public class MonqAuthorizationMiddleware
     /// <param name="context">Инкапсуляция данных HTTP-вызова.</param>
     public async Task InvokeAsync(HttpContext context)
     {
-        _logger.LogDebug("Start updating user grants.");
-        _sw.Reset();
-        _sw.Start();
-        var isSystemUser = context.User.IsSystemUser();
-        if (isSystemUser)
+        using (var activity = AuthActivitySource.Source.StartActivity("MonqAuthorization", ActivityKind.Internal))
         {
-            _sw.Stop();
-            _logger.LogDebug("Updating user grants competed at {ElapsedMilliseconds} ms. User is system user. Skip checking.", _sw.ElapsedMilliseconds);
-            await _next(context);
-            return;
-        }
+            _logger.LogDebug("Start updating user grants.");
+            var isSystemUser = context.User.IsSystemUser();
+            if (isSystemUser)
+            {
+                activity?.SetTag("auth.skipped", true);
+                _logger.LogDebug("Updating user grants completed at {ElapsedMilliseconds} ms. User is system user. Skip checking.",
+                    activity?.Duration.TotalMilliseconds);
+                await _next(context);
+                return;
+            }
 
-        var subjectId = context.User.Subject();
-        if (subjectId == 0)
-        {
-            _logger.LogDebug("Updating user grants competed at {ElapsedMilliseconds} ms. Claim sub == 0. Skip checking.", _sw.ElapsedMilliseconds);
-            await _next(context);
-            return;
-        }
+            var subjectId = context.User.Subject();
+            if (subjectId == 0)
+            {
+                activity?.SetTag("auth.skipped", true);
+                _logger.LogDebug("Updating user grants completed at {ElapsedMilliseconds} ms. Claim sub == 0. Skip checking.",
+                    activity?.Duration.TotalMilliseconds);
+                await _next(context);
+                return;
+            }
 
-        await UpdateGrantsAsync(context);
-        _logger.LogDebug("Updating user grants competed at {ElapsedMilliseconds} ms.", _sw.ElapsedMilliseconds);
+            activity?.SetTag("auth.user.id", subjectId);
+            await UpdateGrantsAsync(context);
+            _logger.LogDebug("Updating user grants completed at {ElapsedMilliseconds} ms.",
+                activity?.Duration.TotalMilliseconds);
+        }
         await _next(context);
     }
 

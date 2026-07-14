@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>6.0.1</Version>
+    <Version>6.1.0</Version>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <Version Condition=" '$(VersionSuffix)' != '' ">$(Version)-$(VersionSuffix)</Version>
     <IsPackable>true</IsPackable>
-    <IsTrimmable>true</IsTrimmable>
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <Authors>Dmitry Fokin</Authors>
     <Company>MONQ Digital lab</Company>
@@ -22,6 +21,10 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <NoWarn>IDE1006</NoWarn>
     <Nullable>enable</Nullable>
+    <!--Trimming and AOT-->
+    <IsTrimmable>true</IsTrimmable>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
   
   <ItemGroup>
@@ -29,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Monq.Core.Authorization.Models" Version="5.2.0" />
+    <PackageReference Include="Monq.Core.Authorization.Models" Version="5.2.1" />
   </ItemGroup>
 
 </Project>

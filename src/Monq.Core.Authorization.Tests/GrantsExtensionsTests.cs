@@ -904,7 +904,7 @@ public class GrantsExtensionsTests
         var httpContext = new DefaultHttpContext();
 
         var userspaceId = sporadic.GetId();
-        httpContext.Request.Headers.Add("x-smon-userspace-id", new StringValues(userspaceId.ToString()));
+        httpContext.Request.Headers.TryAdd("x-smon-userspace-id", new StringValues(userspaceId.ToString()));
 
         var result = httpContext.Request.Userspace();
         Assert.Equal(userspaceId, result);
@@ -921,7 +921,7 @@ public class GrantsExtensionsTests
         var httpContext = new DefaultHttpContext();
 
         var userspaceId = sporadic.GetRandomModuleName();
-        httpContext.Request.Headers.Add("x-smon-userspace-id", new StringValues(userspaceId));
+        httpContext.Request.Headers.TryAdd("x-smon-userspace-id", new StringValues(userspaceId));
 
         const string expectedResult = "Unable to convert userspace ID from header x-smon-userspace-id to valid value.";
         var result = Assert.Throws<UserspaceNotFoundException>(() => httpContext.Request.Userspace());
@@ -933,7 +933,7 @@ public class GrantsExtensionsTests
     {
         var httpContext = new DefaultHttpContext();
 
-        httpContext.Request.Headers.Add("x-smon-userspace-id", new StringValues());
+        httpContext.Request.Headers.TryAdd("x-smon-userspace-id", new StringValues());
 
         const string expectedResult = "Header x-smon-userspace-id not defined.";
         var result = Assert.Throws<UserspaceNotFoundException>(() => httpContext.Request.Userspace());
