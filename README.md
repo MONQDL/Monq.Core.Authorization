@@ -12,6 +12,7 @@
     - [2.1](#21)
   - [Установка](#%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0)
   - [Подключение](#%D0%BF%D0%BE%D0%B4%D0%BA%D0%BB%D1%8E%D1%87%D0%B5%D0%BD%D0%B8%D0%B5)
+  - [OpenTelemetry](#opentelemetry)
   - [Реализуемые методы расширения](#%D1%80%D0%B5%D0%B0%D0%BB%D0%B8%D0%B7%D1%83%D0%B5%D0%BC%D1%8B%D0%B5-%D0%BC%D0%B5%D1%82%D0%BE%D0%B4%D1%8B-%D1%80%D0%B0%D1%81%D1%88%D0%B8%D1%80%D0%B5%D0%BD%D0%B8%D1%8F)
     - [Subject()](#subject)
     - [Userspace()](#userspace)
@@ -102,6 +103,37 @@ public void Configure(IApplicationBuilder app)
 ```
 
 Подключение авторизации следует производить перед _app.UseMvc()_.
+
+## OpenTelemetry
+
+Библиотека предоставляет `ActivitySource` с именем `Monq.Core.Authorization` для трассировки операций авторизации.
+
+### Подключение
+
+При настройке OpenTelemetry в приложении добавьте источник:
+
+```CSharp
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing => tracing
+        .AddSource("Monq.Core.Authorization")
+        // ... остальные источники
+    );
+```
+
+### Создаваемые span'ы
+
+| Имя | Kind | Описание |
+|---|---|---|
+| `MonqAuthorization` | Internal | Процесс обработки авторизации в middleware |
+
+### Теги
+
+| Тег | Тип | Описание |
+|---|---|---|
+| `auth.user.id` | long | Идентификатор пользователя |
+| `auth.skipped` | bool | Авторизация пропущена (системный пользователь или sub == 0) |
+
+> **Примечание:** HTTP-запросы к сервису пользовательских прав автоматически трассируются через `AddHttpClientInstrumentation()`.
 
 ## Реализуемые методы расширения
 

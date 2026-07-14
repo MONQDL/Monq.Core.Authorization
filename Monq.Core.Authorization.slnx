@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/WebApplicationNativeAot/WebApplicationNativeAot.csproj" Id="b18f96f1-da7c-4eeb-a504-b048f81c76b2" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".github/workflows/netcorelibrary.yml" />
+    <File Path=".gitignore" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Monq.Core.Authorization.Tests/Monq.Core.Authorization.Tests.csproj" />
+    <Project Path="src/Monq.Core.Authorization/Monq.Core.Authorization.csproj" />
+  </Folder>
+</Solution>

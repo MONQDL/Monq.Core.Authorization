@@ -1,4 +1,4 @@
-﻿namespace Monq.Core.Authorization.SampleApi.Configuration;
+namespace WebApplicationNativeAot.Configuration;
 
 public static class AuthConstants
 {
@@ -10,13 +10,5 @@ public static class AuthConstants
 
         public const string RequireHttpsMetadata = "RequireHttpsMetadata";
         public const string EnableCaching = "EnableCaching";
-    }
-
-    public static class AuthorizationScopes
-    {
-        public const string Read = "read";
-        public const string Write = "write";
-        public const string SmonAdmin = "smon-admin";
-        public const string CloudAdmin = "cloud-admin";
     }
 }
