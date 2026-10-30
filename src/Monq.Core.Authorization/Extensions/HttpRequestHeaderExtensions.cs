@@ -3,16 +3,16 @@
 namespace Monq.Core.Authorization.Extensions;
 
 /// <summary>
-/// Расширения для работы с заголовком запроса.
+/// Extensions for working with request headers.
 /// </summary>
 public static class HttpRequestHeaderExtensions
 {
     /// <summary>
-    /// Заменить или добавить указанный ключ в заголовок запроса.
+    /// Replaces or adds the specified key in the request header.
     /// </summary>
     /// <param name="httpRequestHeaders"></param>
-    /// <param name="name">Ключ.</param>
-    /// <param name="value">Значение.</param>
+    /// <param name="name">The key.</param>
+    /// <param name="value">The value.</param>
     public static void TryUpdateWithoutValidation(this HttpRequestHeaders httpRequestHeaders, string name, string value)
     {
         if (httpRequestHeaders.Contains(name))
@@ -24,11 +24,11 @@ public static class HttpRequestHeaderExtensions
     }
 
     /// <summary>
-    /// Добавить указанный ключ в заголовок запроса, если такого еще нет.
+    /// Adds the specified key to the request header if it is not yet present.
     /// </summary>
     /// <param name="httpRequestHeaders"></param>
-    /// <param name="name">Ключ.</param>
-    /// <param name="value">Значение.</param>
+    /// <param name="name">The key.</param>
+    /// <param name="value">The value.</param>
     public static void TryAddIfNotContain(this HttpRequestHeaders httpRequestHeaders, string name, string value)
     {
         if (httpRequestHeaders.Contains(name)) return;

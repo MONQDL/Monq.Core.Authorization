@@ -3,7 +3,7 @@ using System;
 namespace Monq.Core.Authorization.Exceptions;
 
 /// <summary>
-/// Представление ошибки отсутствия пользовательского пространства в заголовках.
+/// Represents an error caused by a missing userspace in the request headers.
 /// </summary>
 public class UserspaceNotFoundException : Exception
 {

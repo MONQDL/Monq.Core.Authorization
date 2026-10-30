@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace Monq.Core.Authorization.Extensions;
 
+/// <summary>
+/// Extensions for extracting authorization data from the <see cref="HttpContext"/>.
+/// </summary>
 public static class HttpContextExtensions
 {
     const string Authorization = "Authorization";

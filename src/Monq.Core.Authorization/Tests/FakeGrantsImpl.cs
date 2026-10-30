@@ -8,8 +8,8 @@ using System.Security.Claims;
 namespace Monq.Core.Authorization.Tests;
 
 /// <summary>
-/// Эталонная реализация тестового представления методов расширения пользовательских прав
-/// для идентификаторов на основе утверждений (см. <see cref="IGrantsExtensions"/>).
+/// Reference test implementation of the user grant extension methods for claim-based identifiers
+/// (see <see cref="IGrantsExtensions"/>).
 /// </summary>
 public class FakeGrantsImpl : IGrantsExtensions
 {
@@ -17,90 +17,87 @@ public class FakeGrantsImpl : IGrantsExtensions
         = new GrantsExtensionsDefaultImpl();
 
     /// <summary>
-    /// Получить коллекцию пакетов прав пользователя из <see cref="ClaimsPrincipal"/>.
+    /// Gets the collection of user permission packets from the <see cref="ClaimsPrincipal"/>.
     /// </summary>
     public Func<ClaimsPrincipal?, IEnumerable<PacketViewModel>>? PacketsFunc { get; set; }
 
     /// <summary>
-    /// Проверить, есть ли все заданные права у пользователя из <see cref="ClaimsPrincipal"/>.
+    /// Checks whether the user from the <see cref="ClaimsPrincipal"/> has all of the specified grants.
     /// </summary>
     public Func<ClaimsPrincipal?, long, long, IEnumerable<string>, bool>? HasAllGrantsFunc { get; set; }
 
     /// <summary>
-    /// Проверить, есть ли хотя бы одно из заданных прав у пользователя из <see cref="ClaimsPrincipal"/>.
+    /// Checks whether the user from the <see cref="ClaimsPrincipal"/> has at least one of the specified grants.
     /// </summary>
     public Func<ClaimsPrincipal?, long, long, IEnumerable<string>, bool>? HasAnyGrantFunc { get; set; }
 
     /// <summary>
-    /// Проверить, есть ли заданное именем право у пользователя из <see cref="ClaimsPrincipal"/>.
+    /// Checks whether the user from the <see cref="ClaimsPrincipal"/> has the grant specified by name.
     /// </summary>
     public Func<ClaimsPrincipal?, long, long, string, bool>? HasGrantFunc { get; set; }
 
     /// <summary>
-    /// Проверить, является ли пользователь менеджером рабочей группы.
+    /// Checks whether the user is a work group manager.
     /// </summary>
     public Func<ClaimsPrincipal?, long, long, bool>? IsWorkGroupManagerFunc { get; set; }
 
     /// <summary>
-    /// Получить Id пользователя из <see cref="ClaimsPrincipal"/>.
+    /// Gets the user Id from the <see cref="ClaimsPrincipal"/>.
     /// </summary>
     public Func<ClaimsPrincipal?, long>? SubjectFunc { get; set; }
 
     /// <summary>
-    /// Проверить, есть ли у пользователь
-    /// из <see cref="ClaimsPrincipal"/> доступ к пользовательским сущностям.
+    /// Checks whether the user from the <see cref="ClaimsPrincipal"/> has access to user entities.
     /// </summary>
     public Func<ClaimsPrincipal?, long, bool>? HasUsersEntitiesGrantFunc { get; set; }
 
     /// <summary>
-    /// Проверить есть ли у пользователя
-    /// право из админ. панели.
+    /// Checks whether the user has an admin panel grant.
     /// </summary>
     public Func<ClaimsPrincipal?, long, string, bool>? HasUserspaceAdminPanelGrantFunc { get; set; }
 
     /// <summary>
-    /// Проверить, есть ли хотя бы одно из заданных прав админ. панели у пользователя из <see cref="ClaimsPrincipal"/>.
+    /// Checks whether the user from the <see cref="ClaimsPrincipal"/> has at least one of the specified admin panel grants.
     /// </summary>
     public Func<ClaimsPrincipal?, long, IEnumerable<string>, bool>? HasAnyUserspaceAdminPanelGrantFunc { get; set; }
 
     /// <summary>
-    /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
-    /// системным пользователем.
+    /// Checks whether the user from the <see cref="ClaimsPrincipal"/> is a system user.
     /// </summary>
     public Func<ClaimsPrincipal?, bool>? IsSystemUserFunc { get; set; }
 
     /// <summary>
-    /// Получить Id рабочих групп, в которых у пользователя из <see cref="ClaimsPrincipal"/>
-    /// есть заданное именем право.
+    /// Gets the Ids of the work groups in which the user from the <see cref="ClaimsPrincipal"/>
+    /// has the grant specified by name.
     /// </summary>
     public Func<ClaimsPrincipal?, long, string, IEnumerable<long>>? GetWorkGroupsWithGrantFunc { get; set; }
 
     /// <summary>
-    /// Получить Id рабочих групп, в которых у пользователя из <see cref="ClaimsPrincipal"/>
-    /// есть хотя бы одно из заданных прав.
+    /// Gets the Ids of the work groups in which the user from the <see cref="ClaimsPrincipal"/>
+    /// has at least one of the specified grants.
     /// </summary>
     public Func<ClaimsPrincipal?, long, IEnumerable<string>, IEnumerable<long>>? GetWorkGroupsWithAnyGrantFunc { get; set; }
 
     /// <summary>
-    /// Получить Id рабочих групп, в которых у пользователя из <see cref="ClaimsPrincipal"/>
-    /// есть все заданные права.
+    /// Gets the Ids of the work groups in which the user from the <see cref="ClaimsPrincipal"/>
+    /// has all of the specified grants.
     /// </summary>
     public Func<ClaimsPrincipal?, long, IEnumerable<string>, IEnumerable<long>>? GetWorkGroupsWithAllGrantsFunc { get; set; }
 
     /// <summary>
-    /// Получить Id рабочих групп, в которых у пользователя из <see cref="ClaimsPrincipal"/>
-    /// есть какие-либо права.
+    /// Gets the Ids of the work groups in which the user from the <see cref="ClaimsPrincipal"/>
+    /// has any grants.
     /// </summary>
     public Func<ClaimsPrincipal?, long, IEnumerable<long>>? WorkGroupsFunc { get; set; }
 
     /// <summary>
-    /// Получить Id пространств пользователя, в которых у пользователя из <see cref="ClaimsPrincipal"/>
-    /// есть какие-либо права.
+    /// Gets the Ids of the userspaces in which the user from the <see cref="ClaimsPrincipal"/>
+    /// has any grants.
     /// </summary>
     public Func<ClaimsPrincipal?, IEnumerable<long>>? UserspacesFunc { get; set; }
 
     /// <summary>
-    /// Получить Id пользовательского пространства из заголовков <see cref="HttpRequest"/> исполняемого запроса.
+    /// Gets the userspace Id from the headers of the executing <see cref="HttpRequest"/>.
     /// </summary>
     public Func<HttpRequest, long>? UserspaceFunc { get; set; }
 
@@ -163,13 +160,13 @@ public class FakeGrantsImpl : IGrantsExtensions
         UserspaceFunc?.Invoke(request) ?? _defaultImpl.Userspace(request);
 
     /// <summary>
-    /// Использовать данный экземпляр в качестве имплементации описания методов расширения пользовательских
-    /// прав. Если установлен флаг AutoAssign, метод должен вызываться автоматически при переприсвоении функций-значений.
+    /// Uses this instance as the implementation of the user grant extension methods.
+    /// If the AutoAssign flag is set, this method should be called automatically when value functions are reassigned.
     /// </summary>
     public void Assign() => GrantsExtensions.Implementation = this;
 
     /// <summary>
-    /// Вернуть реализацию методов расширений пользовательских прав по умолчанию.
+    /// Restores the default implementation of the user grant extension methods.
     /// </summary>
     public void RevertToDefaults() => GrantsExtensions.Implementation = _defaultImpl;
 }

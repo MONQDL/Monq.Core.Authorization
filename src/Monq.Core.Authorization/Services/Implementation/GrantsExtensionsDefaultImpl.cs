@@ -22,10 +22,10 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
     const string UserspaceIdHeader = "x-smon-userspace-id";
 
     /// <summary>
-    /// Получить Id пользователя из <see cref="ClaimsPrincipal"/>.
+    /// Gets the user Id from the <see cref="ClaimsPrincipal"/>.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <returns>Идентификатор пользователя, -1 для системного пользователя или 0, если неопределим.</returns>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <returns>The user identifier, -1 for a system user, or 0 if it cannot be determined.</returns>
     public long Subject(ClaimsPrincipal? user)
     {
         if (user is null)
@@ -43,11 +43,11 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
     }
 
     /// <summary>
-    /// Получить права пользователя из <see cref="ClaimsPrincipal"/>.
+    /// Gets the user permission packets from the <see cref="ClaimsPrincipal"/>.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор userspace.</param>
-    /// <returns>Коллекция пакетов прав пользователя <see cref="IEnumerable{PacketViewModel}"/>.</returns>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
+    /// <returns>The collection of user permission packets <see cref="IEnumerable{PacketViewModel}"/>.</returns>
     public IEnumerable<PacketViewModel> Packets(ClaimsPrincipal? user, long userspaceId)
     {
         if (user is null)
@@ -62,26 +62,26 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
     }
 
     /// <summary>
-    /// Проверить, есть ли заданное именем право у пользователя из <see cref="ClaimsPrincipal"/>.
-    /// Всегда безусловно возвращает <c>true</c> для системного пользователя и администратора пространства.
+    /// Checks whether the user from the <see cref="ClaimsPrincipal"/> has the grant specified by name.
+    /// Always unconditionally returns <c>true</c> for a system user and a userspace administrator.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <param name="workGroupId">Идентификатор рабочей группы, в которой проверяется наличие прав.</param>
-    /// <param name="grantName">Строковое представление права (например, "base-system.rsm.read").</param>
-    /// <returns>Истина, если заданное право есть у пользователя запроса.</returns>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
+    /// <param name="workGroupId">The identifier of the work group in which the grant is checked.</param>
+    /// <param name="grantName">The string representation of the grant (for example, "base-system.rsm.read").</param>
+    /// <returns>True if the request user has the specified grant.</returns>
     public bool HasGrant(ClaimsPrincipal? user, long userspaceId, long workGroupId, string grantName)
         => HasAnyGrant(user, userspaceId, workGroupId, new[] { grantName });
 
     /// <summary>
-    /// Проверить, есть ли хотя бы одно из заданных прав у пользователя из <see cref="ClaimsPrincipal"/>.
-    /// Всегда безусловно возвращает <c>true</c> для системного пользователя и администратора пространства.
+    /// Checks whether the user from the <see cref="ClaimsPrincipal"/> has at least one of the specified grants.
+    /// Always unconditionally returns <c>true</c> for a system user and a userspace administrator.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <param name="workGroupId">Идентификатор рабочей группы, в которой проверяется наличие прав.</param>
-    /// <param name="grantNames">Строковые представления прав (например, "base-system.rsm.read").</param>
-    /// <returns>Истина, если хотя бы одно заданное право есть у пользователя запроса.</returns>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
+    /// <param name="workGroupId">The identifier of the work group in which the grants are checked.</param>
+    /// <param name="grantNames">The string representations of the grants (for example, "base-system.rsm.read").</param>
+    /// <returns>True if the request user has at least one of the specified grants.</returns>
     public bool HasAnyGrant(ClaimsPrincipal? user, long userspaceId, long workGroupId, IEnumerable<string> grantNames)
     {
         if (IsSystemUser(user))
@@ -92,8 +92,8 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
 
         var packets = user.Packets(userspaceId);
 
-        // TODO: Похоже, что эту проверку нужно пересмотреть.
-        // Проверка прав админ. панели.
+        // TODO: This check looks like it needs to be revisited.
+        // Admin panel grant check.
         var adminPanelGrants = grantNames.Where(x => x.Contains(Modules.GrantType.AdminsGrantSuffix, StringComparison.Ordinal));
         if (adminPanelGrants?.Any() == true)
         {
@@ -106,9 +106,9 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
             return false;
 
         var userHasAnyGrant = packets
-            .Where(val => grantNames.Any(val.Grants.Contains))  // Фильтруем пакеты по наличию (любого) права.
-            .SelectMany(val => val.Owners)                      // Получаем владельцев оставшихся пакетов.
-            .Any(val => val.WorkGroupId == workGroupId);        // И выясняем, является ли он сам искомой группой.
+            .Where(val => grantNames.Any(val.Grants.Contains))  // Filter packets that contain any of the grants.
+            .SelectMany(val => val.Owners)                      // Get the owners of the remaining packets.
+            .Any(val => val.WorkGroupId == workGroupId);        // And check whether one of them is the target work group.
         return userHasAnyGrant;
     }
 
@@ -126,22 +126,22 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
         if (!packets.Any())
             return false;
 
-        // Получить идентификаторы пакетов пользователя, имеющих права.
-        // к релевантной рабочей группе.
+        // Get the identifiers of the user packets that have grants
+        // related to the target work group.
         var workGroupRelatedPackets = packets
             .SelectMany(val => val.Owners)
             .Where(val => val.WorkGroupId == workGroupId)
             .Select(val => val.PacketId)
             .ToList();
 
-        // Получить уникальные права в этих пакетах.
+        // Get the unique grants in these packets.
         var workGroupRelatedGrants = packets
             .Where(val => workGroupRelatedPackets.Contains(val.Id))
             .SelectMany(val => val.Grants)
             .Distinct()
             .ToList();
 
-        // Проверить все запрашиваемые права в результирующей коллекции.
+        // Check all the requested grants in the resulting collection.
         var userHasAllGrants = grantNames.All(workGroupRelatedGrants.Contains);
         return userHasAllGrants;
     }
@@ -156,7 +156,7 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
         if (!packets.Any())
             return false;
 
-        // Фильтруем по наличию у пользователя системного пакета WorkgroupManager.
+        // Filter by the presence of the system WorkgroupManager packet for the user.
         return packets
             .Any(val => val.Owners
                 .Any(owner => owner.WorkGroupId == workGroupId && owner.UserspaceId == userspaceId)
@@ -182,18 +182,17 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
             return false;
 
         var userHasAnyGrant = packets
-            .Where(val => grants.Any(val.Grants.Contains))  // Фильтруем пакеты по наличию (любого) права.
-            .SelectMany(val => val.Owners)                      // Получаем владельцев оставшихся пакетов.
-            .Any(val => val.UserspaceId == userspaceId);        // И выясняем, находится ли владелец в пространстве.
+            .Where(val => grants.Any(val.Grants.Contains))  // Filter packets that contain any of the grants.
+            .SelectMany(val => val.Owners)                      // Get the owners of the remaining packets.
+            .Any(val => val.UserspaceId == userspaceId);        // And check whether the owner is in the userspace.
         return userHasAnyGrant;
     }
 
     /// <summary>
-    /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
-    /// системным пользователем.
+    /// Checks whether the user from the <see cref="ClaimsPrincipal"/> is a system user.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <returns>Истина, если пользователь обладает аутентификационными данными системного.</returns>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <returns>True if the user has system user credentials.</returns>
     public bool IsSystemUser(ClaimsPrincipal? user)
     {
         if (user is null)
@@ -208,27 +207,27 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
     }
 
     /// <summary>
-    /// Получить Id рабочих групп, в которых у пользователя из <see cref="ClaimsPrincipal"/>
-    /// есть заданное именем право.
+    /// Gets the Ids of the work groups in which the user from the <see cref="ClaimsPrincipal"/>
+    /// has the grant specified by name.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <param name="grantName">Строковое представление права (например, "base-system.rsm.read").</param>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
+    /// <param name="grantName">The string representation of the grant (for example, "base-system.rsm.read").</param>
     /// <returns>
-    /// Список идентификаторов рабочих групп, в которых у пользователя есть заданное право.
+    /// The list of work group identifiers in which the user has the specified grant.
     /// </returns>
     public IEnumerable<long> GetWorkGroupsWithGrant(ClaimsPrincipal? user, long userspaceId, string grantName)
         => GetWorkGroupsWithAnyGrant(user, userspaceId, new[] { grantName });
 
     /// <summary>
-    /// Получить Id рабочих групп, в которых у пользователя из <see cref="ClaimsPrincipal"/>
-    /// есть хотя бы одно из заданных прав.
+    /// Gets the Ids of the work groups in which the user from the <see cref="ClaimsPrincipal"/>
+    /// has at least one of the specified grants.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <param name="grantNames">Строковые представления прав (например, "base-system.rsm.read").</param>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
+    /// <param name="grantNames">The string representations of the grants (for example, "base-system.rsm.read").</param>
     /// <returns>
-    /// Список идентификаторов рабочих групп, в которых у пользователя есть заданное право.
+    /// The list of work group identifiers in which the user has the specified grant.
     /// </returns>
     public IEnumerable<long> GetWorkGroupsWithAnyGrant(ClaimsPrincipal? user, long userspaceId, IEnumerable<string> grantNames)
     {
@@ -256,14 +255,14 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
     }
 
     /// <summary>
-    /// Получить Id рабочих групп, в которых у пользователя из <see cref="ClaimsPrincipal"/>
-    /// есть все заданные права.
+    /// Gets the Ids of the work groups in which the user from the <see cref="ClaimsPrincipal"/>
+    /// has all of the specified grants.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <param name="grantNames">Строковые представления прав (например, "base-system.rsm.read").</param>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
+    /// <param name="grantNames">The string representations of the grants (for example, "base-system.rsm.read").</param>
     /// <returns>
-    /// Список идентификаторов рабочих групп, в которых у пользователя есть заданное право.
+    /// The list of work group identifiers in which the user has the specified grant.
     /// </returns>
     public IEnumerable<long> GetWorkGroupsWithAllGrants(ClaimsPrincipal? user, long userspaceId, IEnumerable<string> grantNames)
     {
@@ -306,12 +305,12 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
     }
 
     /// <summary>
-    /// Получить Id рабочих групп, в которых у пользователя из <see cref="ClaimsPrincipal"/>
-    /// есть какие-либо права.
+    /// Gets the Ids of the work groups in which the user from the <see cref="ClaimsPrincipal"/>
+    /// has any grants.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <returns>Список идентификаторов рабочих групп, в которых у пользователя есть какое-либо право.</returns>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
+    /// <returns>The list of work group identifiers in which the user has any grant.</returns>
     public IEnumerable<long> WorkGroups(ClaimsPrincipal? user, long userspaceId)
         => Packets(user, userspaceId)
             .SelectMany(val => val.Owners)
@@ -320,14 +319,14 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
             .ToList();
 
     /// <summary>
-    /// Получить Id пользовательского пространства из заголовков <see cref="HttpRequest"/> исполняемого запроса.
+    /// Gets the userspace Id from the headers of the executing <see cref="HttpRequest"/>.
     /// </summary>
-    /// <param name="request">Запрос из свойства Request в ControllerBase.</param>
-    /// <returns>Идентификатор пользовательского пространства или 0, если неопределим.</returns>
+    /// <param name="request">The request from the Request property in ControllerBase.</param>
+    /// <returns>The userspace identifier, or 0 if it cannot be determined.</returns>
     public long Userspace(HttpRequest request)
     {
-        // Получаем первый из ключей заголовков, который в каком-нибудь регистре сходится с
-        // ожидаемым, или null, если таких заголовков нет.
+        // Get the first header key that matches the expected one in any casing,
+        // or null if there are no such headers.
         var userspaceIdHeaderKey = request.Headers.Keys.FirstOrDefault(val =>
             string.Equals(val, UserspaceIdHeader, StringComparison.OrdinalIgnoreCase));
 
@@ -336,7 +335,7 @@ internal class GrantsExtensionsDefaultImpl : IGrantsExtensions
             throw new UserspaceNotFoundException($"Header {UserspaceIdHeader} not defined.");
         }
 
-        // Получаем значение полученным в верном регистре ключом.
+        // Get the value using the key matched with the correct casing.
         var userspaceIdHeaderValue = request.Headers[userspaceIdHeaderKey].FirstOrDefault();
 
         if (string.IsNullOrWhiteSpace(userspaceIdHeaderValue))

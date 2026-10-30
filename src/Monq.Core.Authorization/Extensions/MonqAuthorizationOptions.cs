@@ -4,25 +4,34 @@ using System.Threading.Tasks;
 
 namespace Monq.Core.Authorization.Extensions;
 
+/// <summary>
+/// Options for the user authorization middleware.
+/// </summary>
 public sealed class MonqAuthorizationOptions
 {
     /// <summary>
-    /// Делегат вызывается каждый раз при попытке получить Access token.
+    /// Gets or sets the absolute base address of the user grants API, hosted by the Work Groups service.
+    /// Set by the <c>UseMonqAuthorization</c> overloads after address resolution.
+    /// </summary>
+    public Uri? UserGrantsApiAddress { get; set; }
+
+    /// <summary>
+    /// A delegate called each time an access token is requested.
     /// </summary>
     public Func<HttpContext, Task<string>>? GetAccessToken { get; set; } = HttpContextExtensions.GetToken;
 
     /// <summary>
-    /// Делегат для извлечения идентификатора пользовательского пространства из HTTP контекста.
+    /// A delegate for extracting the userspace identifier from the HTTP context.
     /// </summary>
     public Func<HttpContext, Task<string>>? GetUserspaceId { get; set; } = HttpContextExtensions.GetUserspaceId;
 
     /// <summary>
-    /// Если <c>true</c>, то список прав пользователя будет кэширован на <see cref="CacheTime"/>.
+    /// If <c>true</c>, the user's permissions list is cached for <see cref="CacheTime"/>.
     /// </summary>
     public bool UseCache { get; set; } = true;
 
     /// <summary>
-    /// Длительность кэширования прав пользователя, если <see cref="UseCache"/> = <c>true</c>. По умолчанию - 3 сек.
+    /// The user permissions caching duration when <see cref="UseCache"/> is <c>true</c>. Defaults to 3 seconds.
     /// </summary>
     public TimeSpan CacheTime { get; set; } = TimeSpan.FromSeconds(3);
 }

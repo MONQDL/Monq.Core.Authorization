@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Monq.Core.Authorization.Extensions;
 using Monq.Core.Authorization.Middleware;
 using Moq;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -19,7 +18,10 @@ namespace Monq.Core.Authorization.Tests;
 [Collection("Serial")]
 public class MonqAuthorizationMiddlewareTests
 {
-    readonly IConfiguration _config;
+    readonly MonqAuthorizationOptions _options = new()
+    {
+        UserGrantsApiAddress = new Uri("http://localhost:5005")
+    };
     readonly Uri _uri = new Uri("http://localhost:5005");
 
     static readonly JsonSerializerOptions _jsonSerializationOptions = new JsonSerializerOptions
@@ -27,13 +29,6 @@ public class MonqAuthorizationMiddlewareTests
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DictionaryKeyPolicy = JsonNamingPolicy.CamelCase
     };
-
-    public MonqAuthorizationMiddlewareTests()
-    {
-        _config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string> { { "BaseUri", _uri.ToString() } })
-            .Build();
-    }
 
     [Theory(DisplayName = "MonqAuthorizationMiddleware: Проверка корректной последовательности работы middleware.")]
     [InlineData(sbyte.MaxValue)]
@@ -57,8 +52,7 @@ public class MonqAuthorizationMiddlewareTests
                 await innerHttpContext.Response.WriteAsync(responseBody);
                 logger.Object.Log(LogLevel.Information, eventId, responseBody, null, (state, _) => state);
             },
-            _config,
-            null,
+            _options,
             logger.Object,
             httpClientFactoryMock.Object);
 
@@ -107,8 +101,7 @@ public class MonqAuthorizationMiddlewareTests
                 await innerHttpContext.Response.WriteAsync(responseBody);
                 logger.Object.Log(LogLevel.Information, eventId, responseBody, null, (state, _) => state);
             },
-            _config,
-            null,
+            _options,
             logger.Object,
             new Mock<IHttpClientFactory>().Object,
             fakeResponseHandler);

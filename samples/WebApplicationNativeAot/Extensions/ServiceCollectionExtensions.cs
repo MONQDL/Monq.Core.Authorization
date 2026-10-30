@@ -12,13 +12,18 @@ public static class ServiceCollectionExtensions
     {
         var authConfig = configuration.GetSection("Authentication");
 
+        if (!int.TryParse(authConfig[AuthConstants.AuthenticationConfiguration.CacheDurationSeconds],
+                out var cacheDurationSeconds)
+            || cacheDurationSeconds <= 0)
+            cacheDurationSeconds = 300;
+
         services.AddAuthentication(OAuth2IntrospectionDefaults.AuthenticationScheme)
             .AddOAuth2Introspection(OAuth2IntrospectionDefaults.AuthenticationScheme, x =>
             {
                 x.Authority = authConfig[AuthConstants.AuthenticationConfiguration.Authority];
                 x.ClientId = authConfig[AuthConstants.AuthenticationConfiguration.ScopeName];
                 x.ClientSecret = authConfig[AuthConstants.AuthenticationConfiguration.ScopeSecret];
-                x.CacheDuration = TimeSpan.FromMinutes(5);
+                x.CacheDuration = TimeSpan.FromSeconds(cacheDurationSeconds);
                 x.NameClaimType = "fullName";
                 x.DiscoveryPolicy.RequireHttps = false;
             });

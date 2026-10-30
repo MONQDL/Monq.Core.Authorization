@@ -1,6 +1,5 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Monq.Core.Authorization.Extensions;
 using Monq.Core.Authorization.Helpers;
@@ -18,12 +17,10 @@ using System.Threading.Tasks;
 namespace Monq.Core.Authorization.Middleware;
 
 /// <summary>
-/// Middleware (промежуточный слой) для обеспечения авторизации действий пользователя.
+/// Middleware for enforcing user action authorization.
 /// </summary>
 public class MonqAuthorizationMiddleware
 {
-    const string _servicesBaseUri = "BaseUri";
-
     readonly RequestDelegate _next;
     readonly ILogger<MonqAuthorizationMiddleware> _logger;
     readonly IHttpClientFactory _httpClientFactory;
@@ -37,18 +34,16 @@ public class MonqAuthorizationMiddleware
         = new[] { "x-trace-event-id", "x-smon-userspace-id" };
 
     /// <summary>
-    /// Конструктор middleware (промежуточного слоя) для обеспечения авторизации действий пользователя.
-    /// Создаёт новый экземпляр <see cref="MonqAuthorizationMiddleware" />.
+    /// Initializes a new instance of the <see cref="MonqAuthorizationMiddleware" /> class
+    /// for enforcing user action authorization.
     /// </summary>
-    /// <param name="next">Функция обработки HTTP-запроса.</param>
-    /// <param name="configuration">Конфигурация приложения <see cref="IConfiguration" />.</param>
+    /// <param name="next">HTTP request processing function.</param>
     /// <param name="options">The options.</param>
-    /// <param name="logger">Инструментарий логирования <see cref="ILogger" />.</param>
+    /// <param name="logger">The logging instrument <see cref="ILogger" />.</param>
     /// <param name="httpClientFactory">Http Client Factory.</param>
-    /// <param name="httpMessageHandler">Обработчик HTTP-запросов.</param>
+    /// <param name="httpMessageHandler">HTTP request handler.</param>
     public MonqAuthorizationMiddleware(
         RequestDelegate next,
-        IConfiguration configuration,
         MonqAuthorizationOptions? options,
         ILogger<MonqAuthorizationMiddleware> logger,
         IHttpClientFactory httpClientFactory,
@@ -57,17 +52,19 @@ public class MonqAuthorizationMiddleware
         _httpClientFactory = httpClientFactory;
         _options = options ?? new();
         _next = next;
-        _userGrantsApiUri = configuration[_servicesBaseUri]
-            ?? throw new Exception("Can't find 'BaseUri' in IConfiguration providers.");
+        _userGrantsApiUri = options?.UserGrantsApiAddress?.AbsoluteUri
+            ?? throw new ArgumentException(
+                "The user grants API address must be set via MonqAuthorizationOptions.UserGrantsApiAddress.",
+                nameof(options));
         _logger = logger;
 
         _httpMessageHandler = httpMessageHandler;
     }
 
     /// <summary>
-    /// Произвести вызов действий данного middleware в цепочке вызовов.
+    /// Produces the actions of this middleware in the invocation chain.
     /// </summary>
-    /// <param name="context">Инкапсуляция данных HTTP-вызова.</param>
+    /// <param name="context">Encapsulation of HTTP call data.</param>
     public async Task InvokeAsync(HttpContext context)
     {
         using (var activity = AuthActivitySource.Source.StartActivity("MonqAuthorization", ActivityKind.Internal))
