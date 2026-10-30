@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 namespace Monq.Core.Authorization.Helpers;
 
 /// <summary>
-/// Хранилище пакетов прав пользователей.
+/// Storage of user permission packets.
 /// </summary>
 internal static class PacketRepository
 {
@@ -52,7 +52,7 @@ internal static class PacketRepository
         => _packets[new CachedUser { UserId = userId, UserspaceId = userspaceId, Key = key }] = new CachedPacket { Packets = new[] { grant }, AddedAt = DateTimeOffset.UtcNow, CacheTimeout = cacheTimeout };
 
     /// <summary>
-    /// Установить соответствие пользователя с пакетом прав.
+    /// Sets the user to permission packet mapping.
     /// </summary>
     /// <param name="userId">User identifier.</param>
     /// <param name="userspaceId">Userspace identifier.</param>
@@ -66,17 +66,17 @@ internal static class PacketRepository
 internal record CachedPacket
 {
     /// <summary>
-    /// Список пакетов.
+    /// The list of packets.
     /// </summary>
     public IEnumerable<PacketViewModel> Packets { get; init; } = Array.Empty<PacketViewModel>();
 
     /// <summary>
-    /// Время добавления пакета в кэш.
+    /// The time the packet was added to the cache.
     /// </summary>
     public DateTimeOffset AddedAt { get; init; }
 
     /// <summary>
-    /// Таймаут кэша.
+    /// The cache timeout.
     /// </summary>
     public TimeSpan? CacheTimeout { get; init; }
 }

@@ -5,7 +5,7 @@ internal static class Modules
     internal static class GrantType
     {
         /// <summary>
-        /// Суффикс прав админ. панели.
+        /// Suffix of the admin panel grants.
         /// </summary>
         internal const string AdminsGrantSuffix = ".admins.";
     }

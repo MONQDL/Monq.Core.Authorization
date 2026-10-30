@@ -7,148 +7,144 @@ using System.Security.Claims;
 namespace Microsoft.AspNetCore.Authorization;
 
 /// <summary>
-/// Интерфейс описания методов расширения пользовательских прав для идентификаторов на основе утверждений
-/// (см. <see cref="ClaimsPrincipal"/>).
+/// Describes user grant extension methods for claim-based identifiers (see <see cref="ClaimsPrincipal"/>).
 /// </summary>
 public interface IGrantsExtensions
 {
     /// <summary>
-    /// Получить Id пользователя из <see cref="ClaimsPrincipal"/>.
+    /// Gets the user Id from the <see cref="ClaimsPrincipal"/>.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <returns>Идентификатор пользователя, -1 для системного пользователя или 0, если неопределим.</returns>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <returns>The user identifier, -1 for a system user, or 0 if it cannot be determined.</returns>
     long Subject(ClaimsPrincipal? user);
 
     /// <summary>
-    /// Получить права пользователя из <see cref="ClaimsPrincipal"/>.
+    /// Gets the user permission packets from the <see cref="ClaimsPrincipal"/>.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор userspace.</param>
-    /// <returns>Коллекция пакетов прав пользователя <see cref="IEnumerable{PacketViewModel}"/>.</returns>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
+    /// <returns>The collection of user permission packets <see cref="IEnumerable{PacketViewModel}"/>.</returns>
     IEnumerable<PacketViewModel> Packets(ClaimsPrincipal? user, long userspaceId);
 
     /// <summary>
-    /// Проверить, есть ли заданное именем право у пользователя из <see cref="ClaimsPrincipal"/>.
-    /// Всегда безусловно возвращает <c>true</c> для системного пользователя и администратора пространства.
+    /// Checks whether the user from the <see cref="ClaimsPrincipal"/> has the grant specified by name.
+    /// Always unconditionally returns <c>true</c> for a system user and a userspace administrator.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <param name="workGroupId">Идентификатор рабочей группы, в которой проверяется наличие прав.</param>
-    /// <param name="grantName">Строковое представление права (например, "base-system.rsm.read").</param>
-    /// <returns>Истина, если заданное право есть у пользователя запроса.</returns>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
+    /// <param name="workGroupId">The identifier of the work group in which the grant is checked.</param>
+    /// <param name="grantName">The string representation of the grant (for example, "base-system.rsm.read").</param>
+    /// <returns>True if the request user has the specified grant.</returns>
     bool HasGrant(ClaimsPrincipal? user, long userspaceId, long workGroupId, string grantName);
 
     /// <summary>
-    /// Проверить, есть ли хотя бы одно из заданных прав у пользователя из <see cref="ClaimsPrincipal"/>.
-    /// Всегда безусловно возвращает <c>true</c> для системного пользователя и администратора пространства.
+    /// Checks whether the user from the <see cref="ClaimsPrincipal"/> has at least one of the specified grants.
+    /// Always unconditionally returns <c>true</c> for a system user and a userspace administrator.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <param name="workGroupId">Идентификатор рабочей группы, в которой проверяется наличие прав.</param>
-    /// <param name="grantNames">Строковые представления прав (например, "base-system.rsm.read").</param>
-    /// <returns>Истина, если хотя бы одно заданное право есть у пользователя запроса.</returns>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
+    /// <param name="workGroupId">The identifier of the work group in which the grants are checked.</param>
+    /// <param name="grantNames">The string representations of the grants (for example, "base-system.rsm.read").</param>
+    /// <returns>True if the request user has at least one of the specified grants.</returns>
     bool HasAnyGrant(ClaimsPrincipal? user, long userspaceId, long workGroupId, IEnumerable<string> grantNames);
 
     /// <summary>
-    /// Проверить, есть ли все заданные права у пользователя из <see cref="ClaimsPrincipal"/>.
-    /// Всегда безусловно возвращает <c>true</c> для системного пользователя и администратора пространства.
+    /// Checks whether the user from the <see cref="ClaimsPrincipal"/> has all of the specified grants.
+    /// Always unconditionally returns <c>true</c> for a system user and a userspace administrator.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <param name="workGroupId">Идентификатор рабочей группы, в которой проверяется наличие прав.</param>
-    /// <param name="grantNames">Строковые представления прав (например, "base-system.rsm.read").</param>
-    /// <returns>Истина, если все заданные права есть у пользователя запроса.</returns>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
+    /// <param name="workGroupId">The identifier of the work group in which the grants are checked.</param>
+    /// <param name="grantNames">The string representations of the grants (for example, "base-system.rsm.read").</param>
+    /// <returns>True if the request user has all of the specified grants.</returns>
     bool HasAllGrants(ClaimsPrincipal? user, long userspaceId, long workGroupId, IEnumerable<string> grantNames);
 
     /// <summary>
-    /// Проверить, является ли пользователь менеджером рабочей группы.
+    /// Checks whether the user is a work group manager.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <param name="workGroupId">Идентификатор рабочей группы, в которой проверяется наличие прав.</param>
-    /// <returns>Истина, если пользователь является менеджером выбранной рабочей группы.</returns>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
+    /// <param name="workGroupId">The identifier of the work group in which the role is checked.</param>
+    /// <returns>True if the user is a manager of the selected work group.</returns>
     bool IsWorkGroupManager(ClaimsPrincipal? user, long userspaceId, long workGroupId);
 
     /// <summary>
-    /// Проверить есть ли у пользователя
-    /// с данным идентификатором <paramref name="userspaceId"/>
-    /// право из админ. панели.
+    /// Checks whether the user with the given <paramref name="userspaceId"/> has an admin panel grant.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <param name="adminPanelGrant">Строковое представление права админ панели (например, "pl.admins.user-entities-write").</param>
-    /// <returns>Истина при наличии права.</returns>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
+    /// <param name="adminPanelGrant">The string representation of the admin panel grant (for example, "pl.admins.user-entities-write").</param>
+    /// <returns>True if the grant is present.</returns>
     bool HasUserspaceAdminPanelGrant(ClaimsPrincipal? user, long userspaceId, string adminPanelGrant);
 
     /// <summary>
-    /// Проверить, есть ли хотя бы одно из заданных прав админ. панели у пользователя из <see cref="ClaimsPrincipal"/>.
+    /// Checks whether the user from the <see cref="ClaimsPrincipal"/> has at least one of the specified admin panel grants.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <param name="adminPanelGrantNames">Строковые представления прав админ. панели (например, "pl.admins.user-entities-write").</param>
-    /// <returns>Истина, если хотя бы одно заданное право есть у пользователя запроса.</returns>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
+    /// <param name="adminPanelGrantNames">The string representations of the admin panel grants (for example, "pl.admins.user-entities-write").</param>
+    /// <returns>True if the request user has at least one of the specified grants.</returns>
     bool HasAnyUserspaceAdminPanelGrant(ClaimsPrincipal? user, long userspaceId,
         IEnumerable<string> adminPanelGrantNames);
 
     /// <summary>
-    /// Проверить, является ли пользователь из <see cref="ClaimsPrincipal"/>
-    /// системным пользователем.
+    /// Checks whether the user from the <see cref="ClaimsPrincipal"/> is a system user.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <returns>Истина, если пользователь обладает правами системного пользователя.</returns>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <returns>True if the user has system user privileges.</returns>
     bool IsSystemUser(ClaimsPrincipal? user);
 
     /// <summary>
-    /// Получить Id рабочих групп, в которых у пользователя из <see cref="ClaimsPrincipal"/>
-    /// есть заданное именем право.
+    /// Gets the Ids of the work groups in which the user from the <see cref="ClaimsPrincipal"/>
+    /// has the grant specified by name.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <param name="grantName">Строковое представление права (например, "base-system.rsm.read").</param>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
+    /// <param name="grantName">The string representation of the grant (for example, "base-system.rsm.read").</param>
     /// <returns>
-    /// Список идентификаторов рабочих групп, в которых у пользователя есть заданное право.
+    /// The list of work group identifiers in which the user has the specified grant.
     /// </returns>
     IEnumerable<long> GetWorkGroupsWithGrant(ClaimsPrincipal? user, long userspaceId, string grantName);
 
     /// <summary>
-    /// Получить Id рабочих групп, в которых у пользователя из <see cref="ClaimsPrincipal"/>
-    /// есть хотя бы одно из заданных прав.
+    /// Gets the Ids of the work groups in which the user from the <see cref="ClaimsPrincipal"/>
+    /// has at least one of the specified grants.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <param name="grantNames">Строковые представления прав (например, "base-system.rsm.read").</param>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
+    /// <param name="grantNames">The string representations of the grants (for example, "base-system.rsm.read").</param>
     /// <returns>
-    /// Список идентификаторов рабочих групп, в которых у пользователя есть заданное право.
+    /// The list of work group identifiers in which the user has the specified grant.
     /// </returns>
     IEnumerable<long> GetWorkGroupsWithAnyGrant(ClaimsPrincipal? user, long userspaceId, IEnumerable<string> grantNames);
 
     /// <summary>
-    /// Получить Id рабочих групп, в которых у пользователя из <see cref="ClaimsPrincipal"/>
-    /// есть все заданные права.
+    /// Gets the Ids of the work groups in which the user from the <see cref="ClaimsPrincipal"/>
+    /// has all of the specified grants.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
-    /// <param name="grantNames">Строковые представления прав (например, "base-system.rsm.read").</param>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
+    /// <param name="grantNames">The string representations of the grants (for example, "base-system.rsm.read").</param>
     /// <returns>
-    /// Список идентификаторов рабочих групп, в которых у пользователя есть заданное право.
+    /// The list of work group identifiers in which the user has the specified grant.
     /// </returns>
     IEnumerable<long> GetWorkGroupsWithAllGrants(ClaimsPrincipal? user, long userspaceId, IEnumerable<string> grantNames);
 
     /// <summary>
-    /// Получить Id рабочих групп, в которых у пользователя из <see cref="ClaimsPrincipal"/>
-    /// есть какие-либо права.
+    /// Gets the Ids of the work groups in which the user from the <see cref="ClaimsPrincipal"/>
+    /// has any grants.
     /// </summary>
-    /// <param name="user">Пользователь запроса из свойства User в ControllerBase.</param>
-    /// <param name="userspaceId">Идентификатор пользовательского пространства.</param>
+    /// <param name="user">The request user from the User property in ControllerBase.</param>
+    /// <param name="userspaceId">The userspace identifier.</param>
     /// <returns>
-    /// Список идентификаторов рабочих групп, в которых у пользователя есть какое-либо право.
+    /// The list of work group identifiers in which the user has any grant.
     /// </returns>
     IEnumerable<long> WorkGroups(ClaimsPrincipal? user, long userspaceId);
 
     /// <summary>
-    /// Получить Id пользовательского пространства из заголовков <see cref="HttpRequest"/> исполняемого запроса.
+    /// Gets the userspace Id from the headers of the executing <see cref="HttpRequest"/>.
     /// </summary>
-    /// <param name="request">Запрос из свойства Request в ControllerBase.</param>
-    /// <returns>Идентификатор пользовательского пространства или 0, если неопределим.</returns>
+    /// <param name="request">The request from the Request property in ControllerBase.</param>
+    /// <returns>The userspace identifier, or 0 if it cannot be determined.</returns>
     long Userspace(HttpRequest request);
 }

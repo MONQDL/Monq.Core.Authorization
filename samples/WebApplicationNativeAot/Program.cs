@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http.HttpResults;
+using Monq.Core.MicroserviceAddressing.DependencyInjection;
 using System.Text.Json.Serialization;
 using WebApplicationNativeAot.Extensions;
 
@@ -10,12 +11,13 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 
 builder.Services.ConfigureMonqAuthentication(builder.Configuration);
+builder.Services.AddMicroserviceAddressing();
 
 var app = builder.Build();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMonqAuthorization(app.Configuration);
+app.UseMonqAuthorization();
 
 Todo[] sampleTodos =
 [
