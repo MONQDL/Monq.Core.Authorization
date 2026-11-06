@@ -58,7 +58,7 @@ resolved by the default application name `pl-work-groups-api-service` through th
 `IMicroserviceAddressProvider`.
 
 ```CSharp
-builder.Host.UseMicroserviceAddressResolver(
+builder.Services.UseMicroserviceAddressResolver(
     new KubernetesClusterIpAddressResolver());
 
 ...
@@ -70,14 +70,18 @@ For local development outside Kubernetes, configure the resolver once per enviro
 that the parameterless call keeps working everywhere:
 
 ```CSharp
-builder.Host.UseMicroserviceAddressResolver(context =>
+builder.Services.UseMicroserviceAddressResolver(
+    new FixedMicroserviceAddressResolver(new Uri("https://api.example.test")));
+```
+
+In console applications the resolver is selected inside `ConfigureServices` to observe
+the final host environment:
+
+```CSharp
+.ConfigureServices((context, services) => services.UseMicroserviceAddressResolver(
     context.HostingEnvironment.IsDevelopment()
         ? new FixedMicroserviceAddressResolver(new Uri("https://api.example.test"))
-        : new KubernetesClusterIpAddressResolver());
-
-...
-
-app.UseMonqAuthorization();
+        : new KubernetesClusterIpAddressResolver()))
 ```
 
 An already resolved absolute address can also be passed directly for a one-off case:
@@ -88,7 +92,7 @@ app.UseMonqAuthorization(new Uri("https://api.example.test"));
 
 The name-based overloads require `IMicroserviceAddressProvider` in the DI container.
 It is registered automatically by the `Monq.Core.BasicDotNetMicroservice` defaults, by
-any `builder.Host.UseMicroserviceAddressResolver(...)` call, or explicitly via
+any `builder.Services.UseMicroserviceAddressResolver(...)` call, or explicitly via
 `builder.Services.AddMicroserviceAddressing()`.
 
 Authorization should be connected before `app.UseMvc()` (or before the endpoints are mapped).

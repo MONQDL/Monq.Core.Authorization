@@ -66,10 +66,8 @@ Recommended pattern for local development outside Kubernetes — configure the r
 once per environment so the parameterless call keeps working everywhere:
 
 ```CSharp
-builder.Host.UseMicroserviceAddressResolver(context =>
-    context.HostingEnvironment.IsDevelopment()
-        ? new FixedMicroserviceAddressResolver(new Uri("https://work-groups.example.test"))
-        : new KubernetesClusterIpAddressResolver());
+builder.Services.UseMicroserviceAddressResolver(
+    new FixedMicroserviceAddressResolver(new Uri("https://work-groups.example.test")));
 
 ...
 
@@ -88,7 +86,7 @@ pass an explicit `Uri` of your ingress/dev environment there.
 
 The name-based overloads require `IMicroserviceAddressProvider` in the DI container.
 Services based on `Monq.Core.BasicDotNetMicroservice` get it registered automatically;
-custom hosts must call `builder.Host.UseMicroserviceAddressResolver(...)` or
+custom hosts must call `builder.Services.UseMicroserviceAddressResolver(...)` or
 `builder.Services.AddMicroserviceAddressing()`, otherwise
 `UseMonqAuthorization()` fails to start with a descriptive DI error.
 
