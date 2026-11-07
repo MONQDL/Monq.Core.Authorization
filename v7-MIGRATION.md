@@ -12,7 +12,8 @@ grants service, so the default application name is `pl-work-groups-api-service`
 ## Breaking changes
 
 - `UseMonqAuthorization(IConfiguration)` and
-  `UseMonqAuthorization(MonqAuthorizationOptions, IConfiguration)` are removed.
+  `UseMonqAuthorization(MonqAuthorizationOptions, IConfiguration)` are removed; use the
+  parameterless/name-based overloads or pass a custom address as an explicit `Uri`.
 - The `"BaseUri"` configuration key is no longer read anywhere.
 - `MonqAuthorizationMiddleware` constructor no longer accepts `IConfiguration`
   (relevant only for manual middleware construction).

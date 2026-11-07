@@ -118,12 +118,13 @@ overloads after address resolution; set it directly only if you build a custom i
 
 `samples/WebApplicationNativeAot` reads the OAuth2 introspection settings of the
 host application from the *Authentication* configuration section
-(appsettings.json or Consul):
+(appsettings.json or Consul). The introspection authority is not read from
+configuration: the sample resolves it by the identity application name through
+`IMicroserviceAddressProvider`.
 
 ```json
 {
   "Authentication": {
-    "AuthenticationEndpoint": "https://identity.example.com",
     "ApiResource": {
       "Login": "api-resource",
       "Password": "api-resource-secret"
@@ -134,8 +135,7 @@ host application from the *Authentication* configuration section
 ```
 
 `CacheDurationSeconds` is the introspection response cache duration in seconds
-(300 by default); `Monq.Core.BasicDotNetMicroservice` reads the same key when it
-configures the introspection handler itself.
+(300 by default).
 
 ## Migration to 7.0.0
 
