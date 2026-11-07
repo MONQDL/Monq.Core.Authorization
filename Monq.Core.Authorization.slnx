@@ -7,6 +7,7 @@
     <File Path=".gitignore" />
     <File Path="LICENSE" />
     <File Path="README.md" />
+    <File Path="v7-MIGRATION.md" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Monq.Core.Authorization.Tests/Monq.Core.Authorization.Tests.csproj" />
